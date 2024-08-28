@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.View", "UniversityApp.View\UniversityApp.View.csproj", "{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.View", "UniversityApp.View\UniversityApp.View.csproj", "{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.Debug", "UniversityApp.Debug\UniversityApp.Debug.csproj", "{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.Debug", "UniversityApp.Debug\UniversityApp.Debug.csproj", "{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.Model", "UniversityApp.Model\UniversityApp.Model.csproj", "{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.Model", "UniversityApp.Model\UniversityApp.Model.csproj", "{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.ViewModel", "UniversityApp.ViewModel\UniversityApp.ViewModel.csproj", "{B7A6D659-4D58-4355-BD3D-C65D61A73711}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.ViewModel", "UniversityApp.ViewModel\UniversityApp.ViewModel.csproj", "{B7A6D659-4D58-4355-BD3D-C65D61A73711}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.ViewModel.Tests", "UniversityApp.ViewModel.Tests\UniversityApp.ViewModel.Tests.csproj", "{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.ViewModel.Tests", "UniversityApp.ViewModel.Tests\UniversityApp.ViewModel.Tests.csproj", "{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.Model.Tests", "UniversityApp.Model.Tests\UniversityApp.Model.Tests.csproj", "{E7B2ED88-B116-4816-A909-2E13B2DE95BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7B2ED88-B116-4816-A909-2E13B2DE95BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E7B2ED88-B116-4816-A909-2E13B2DE95BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E7B2ED88-B116-4816-A909-2E13B2DE95BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E7B2ED88-B116-4816-A909-2E13B2DE95BE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
