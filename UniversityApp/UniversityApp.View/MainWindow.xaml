@@ -4,9 +4,32 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:UniversityApp.View"
+        xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels;assembly=UniversityApp.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="UniversityApp" Height="450" Width="800">
+    <Window.DataContext>
+        <vms:TestViewModel/>
+    </Window.DataContext>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="7*" />
+        </Grid.RowDefinitions>
 
+        <Button
+            Grid.Row="0"
+            Width="150"
+            Content="Get all courses"
+            Command="{Binding GetAllCoursesCommand}"/>
+
+        <DataGrid
+            Grid.Row="1"
+            AutoGenerateColumns="False"
+            ItemsSource="{Binding Courses}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
