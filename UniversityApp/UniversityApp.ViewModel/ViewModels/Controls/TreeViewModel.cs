@@ -1,14 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
 using UniversityApp.Model.Entities;
 using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
 using UniversityApp.ViewModel.Interfaces;
 
-namespace UniversityApp.ViewModel.ViewModels;
+namespace UniversityApp.ViewModel.ViewModels.Controls;
 
-public class TestViewModel : ViewModelBase
+public class TreeViewModel : ViewModelBase
 {
     private IUnitOfWork _unitOfWork;
 
@@ -32,13 +31,7 @@ public class TestViewModel : ViewModelBase
 
     public IAsyncCommand GetAllCoursesCommand { get; }
 
-    public TestViewModel()
-    {
-        _unitOfWork = new UnitOfWork();
-        GetAllCoursesCommand = AsyncCommand.Create(GetAll);
-    }
-
-    public TestViewModel(
+    public TreeViewModel(
         IUnitOfWork unitOfWork,
         IAsyncCommand getAllCoursesCommand)
     {
@@ -46,10 +39,10 @@ public class TestViewModel : ViewModelBase
         GetAllCoursesCommand = getAllCoursesCommand;
     }
 
-    private async Task GetAll(CancellationToken cancellationToken)
+    private async Task GetAll(CancellationToken cancellationToken = default)
     {
+        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
         var list = await _unitOfWork.CourseRepository.GetAsync();
-        cancellationToken.ThrowIfCancellationRequested();
         Courses = new ObservableCollection<Course>(list);
     }
 }

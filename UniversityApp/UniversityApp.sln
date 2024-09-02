@@ -5,15 +5,13 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.View", "UniversityApp.View\UniversityApp.View.csproj", "{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.Debug", "UniversityApp.Debug\UniversityApp.Debug.csproj", "{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.Model", "UniversityApp.Model\UniversityApp.Model.csproj", "{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.ViewModel", "UniversityApp.ViewModel\UniversityApp.ViewModel.csproj", "{B7A6D659-4D58-4355-BD3D-C65D61A73711}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.ViewModel.Tests", "UniversityApp.ViewModel.Tests\UniversityApp.ViewModel.Tests.csproj", "{9A5F1010-A6BD-41D7-A891-D6A0C5AA6941}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniversityApp.Model.Tests", "UniversityApp.Model.Tests\UniversityApp.Model.Tests.csproj", "{E7B2ED88-B116-4816-A909-2E13B2DE95BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UniversityApp.Model.Tests", "UniversityApp.Model.Tests\UniversityApp.Model.Tests.csproj", "{E7B2ED88-B116-4816-A909-2E13B2DE95BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,10 +23,6 @@ Global
 		{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9E8044D-815C-4FAE-A3C8-9B35C3F3DE6B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C7227996-DCE6-49CF-94B6-E02DE9EFD4F2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2D1F5AA-86F0-417E-8218-E26BC7ACEB84}.Release|Any CPU.ActiveCfg = Release|Any CPU
