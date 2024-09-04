@@ -1,7 +1,7 @@
 ﻿using Ninject;
 using UniversityApp.Model.Interfaces;
 
-namespace UniversityApp.ViewModel.ViewModels.PagesVM;
+namespace UniversityApp.ViewModel.ViewModels.Pages;
 
 public class TeacherViewModel : ViewModelBase
 {

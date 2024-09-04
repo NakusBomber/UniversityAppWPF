@@ -15,7 +15,6 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
-using UniversityApp.ViewModel.ViewModels.PagesVM;
 
 namespace UniversityApp.View.Pages
 {

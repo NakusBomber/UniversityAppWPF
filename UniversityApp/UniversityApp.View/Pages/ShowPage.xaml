@@ -2,15 +2,35 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Pages;assembly=UniversityApp.ViewModel"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:UniversityApp.View.Pages"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
+      d:DataContext="{d:DesignInstance Type=vms:ShowViewModel}"
       Title="ShowPage">
 
     <Grid>
-        <Label HorizontalAlignment="Center"
-               VerticalAlignment="Center">
-        dawdbkwjdbjkaw</Label>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="7*" />
+        </Grid.RowDefinitions>
+
+
+        <Button Grid.Row="0"
+                Content="Load data"
+                Height="30"
+                Width="120"
+                Command="{Binding TreeViewModel.GetAllCoursesCommand}"/>
+
+        <TreeView Grid.Row="1"
+                  ItemsSource="{Binding TreeViewModel.Items}">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}"/>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
     </Grid>
 </Page>

@@ -5,6 +5,15 @@
              xmlns:converters="clr-namespace:UniversityApp.ViewModel.Converters;assembly=UniversityApp.ViewModel"
              Startup="Application_Startup">
     <Application.Resources>
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ResourceDictionary>
+
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <ResourceDictionary.MergedDictionaries>
+
+                <ResourceDictionary Source="DataTemplateNavigation.xaml"/>
+
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -42,7 +42,7 @@ namespace UniversityApp.Model.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("UniversityApp.Model.Entities.Group", b =>
@@ -67,7 +67,7 @@ namespace UniversityApp.Model.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("UniversityApp.Model.Entities.Student", b =>
@@ -95,7 +95,7 @@ namespace UniversityApp.Model.Migrations
 
                     b.HasIndex("FirstName", "LastName");
 
-                    b.ToTable("Students");
+                    b.ToTable("Students", (string)null);
                 });
 
             modelBuilder.Entity("UniversityApp.Model.Entities.Teacher", b =>
@@ -123,7 +123,7 @@ namespace UniversityApp.Model.Migrations
 
                     b.HasIndex("FirstName", "LastName");
 
-                    b.ToTable("Teachers");
+                    b.ToTable("Teachers", (string)null);
                 });
 
             modelBuilder.Entity("UniversityApp.Model.Entities.Group", b =>

@@ -7,12 +7,17 @@ using UniversityApp.Model.Entities;
 using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
-using UniversityApp.ViewModel.ViewModels.PagesVM;
+using UniversityApp.ViewModel.Helpers;
+using UniversityApp.ViewModel.Interfaces;
+using UniversityApp.ViewModel.Stores;
+using UniversityApp.ViewModel.ViewModels.Pages;
 
 namespace UniversityApp.ViewModel.ViewModels;
 
 public class NavigationViewModel : ViewModelBase
 {
+	private readonly INavigationStore _navigationStore;
+
 	private ViewModelBase _currentVM;
 	public ViewModelBase CurrentVM
 	{
@@ -24,41 +29,23 @@ public class NavigationViewModel : ViewModelBase
 		}
 	}
 
-	private ObservableCollection<ViewModelBase> _viewModels;
-
-	public ObservableCollection<ViewModelBase> ViewModels
-	{
-		get => _viewModels;
-		set
-		{
-			_viewModels = value;
-			OnPropertyChanged();
-		}
-	}
-
-
 	public ICommand NavigateCommand { get; set; }
 
-	private void ChangeVM(object? obj)
+	
+	public NavigationViewModel(INavigationStore navigationStore)
 	{
+		_navigationStore = navigationStore;
+		NavigateCommand = new RelayCommand(ChangeVM);
+
+		_currentVM = _navigationStore.GetViewModel(EPages.Show);
+	}
+
+    private void ChangeVM(object? obj)
+    {
         ArgumentNullException.ThrowIfNull(obj);
 
-		string vmName = (string)obj;
-		if (vmName == null || vmName.Length == 0)
-		{
-			throw new ArgumentException("Incorrect name VM");
-		}
+        EPages pageNeeded = (EPages)obj;
+        CurrentVM = _navigationStore.GetViewModel(pageNeeded);
+    }
 
-		ViewModelBase vm;
-		switch (vmName)
-		{
-			case "Show":
-				vm = _kernel.Get<ShowViewModel>(); // ?
-				break;
-		}
-	}
-	public NavigationViewModel()
-	{
-		//NavigateShowCommand = new RelayCommand(_ => CurrentPage = new ShowPage());
-	}
 }
