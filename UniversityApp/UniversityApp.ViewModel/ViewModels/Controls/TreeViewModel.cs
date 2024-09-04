@@ -42,17 +42,12 @@ public class TreeViewModel : ViewModelBase
     private async Task ReloadTree(CancellationToken cancellationToken = default)
     {
         var courses = await GetCoursesAsync();
-        var groups = await GetGroupsAsync();
-        var students = await GetStudentsAsync();
 
-        Items = new ObservableCollection<TreeItem>(from course in courses
-                                                   select new TreeItem(course.Name ?? "",
-                                                                       new ObservableCollection<TreeItem>(from gr in groups
-                                                                                                          where gr.Course == course
-                                                                                                          select new TreeItem(gr.Name ?? "",
-                                                                                                                              new ObservableCollection<TreeItem>(from st in students
-                                                                                                                                                                 where st.Group == gr
-                                                                                                                                                                 select new TreeItem($"{st.FirstName} {st.LastName}"))))));
+        // Includes
+        await GetGroupsAsync();
+        await GetStudentsAsync();
+
+        Items = new ObservableCollection<TreeItem>(courses.Select(c => new TreeItem(c)));
     }
 
     private async Task<IEnumerable<Course>> GetCoursesAsync(CancellationToken cancellationToken = default)

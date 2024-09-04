@@ -18,6 +18,8 @@ public class Course : Entity
     [StringLength(300)]
     public string? Description { get; set; }
 
+    public List<Group> Groups { get; set; } = new List<Group>();
+
     public Course()
     {
         Id = Guid.Empty;

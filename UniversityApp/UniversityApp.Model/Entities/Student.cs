@@ -19,6 +19,9 @@ public class Student : Entity
     [StringLength(50)]
     public string? LastName { get; set; }
 
+    [NotMapped]
+    public string FullName => GetFullName();
+
     [ForeignKey(nameof(GroupId))]
     public Group? Group { get; set; }
 
@@ -44,5 +47,13 @@ public class Student : Entity
     public override int GetHashCode()
     {
         return (Id, FirstName, LastName, GroupId).GetHashCode();
+    }
+
+    private string GetFullName()
+    {
+        string spacer = FirstName != null && LastName != null 
+                        ? " " 
+                        : "";
+        return $"{FirstName}{spacer}{LastName}";
     }
 }
