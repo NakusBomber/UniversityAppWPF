@@ -17,14 +17,14 @@ public class Group : Entity
 
     [Required]
     [ForeignKey(nameof(CourseId))]
-    public Course? Course { get; set; }
+    public virtual Course? Course { get; set; }
 
     [Required]
     public Guid? CourseId { get; set; }
 
-    public List<Student> Students { get; set; } = new List<Student>();
+    public virtual List<Student> Students { get; set; } = new List<Student>();
 
-    public List<Teacher> Teachers { get; set; } = new List<Teacher>();
+    public virtual List<Teacher> Teachers { get; set; } = new List<Teacher>();
     public Group()
     {
         Id = Guid.Empty;

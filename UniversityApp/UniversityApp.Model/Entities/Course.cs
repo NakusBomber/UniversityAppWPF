@@ -18,7 +18,7 @@ public class Course : Entity
     [StringLength(300)]
     public string? Description { get; set; }
 
-    public List<Group> Groups { get; set; } = new List<Group>();
+    public virtual List<Group> Groups { get; set; } = new List<Group>();
 
     public Course()
     {

@@ -11,6 +11,14 @@ namespace UniversityApp.ViewModel.ViewModels.Controls;
 public class TreeViewModel : ViewModelBase
 {
     private IUnitOfWork _unitOfWork;
+    private IEnumerable<Course>? _courses;
+    private ObservableCollection<TreeItem> _fakeChildren
+    {
+        get => new ObservableCollection<TreeItem>
+        {
+            new TreeItem("...", "Fake")
+        };
+    }
 
     private ObservableCollection<TreeItem>? _items;
     public ObservableCollection<TreeItem> Items
@@ -30,41 +38,97 @@ public class TreeViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand GetAllCoursesCommand { get; }
+    public IAsyncCommand ReloadCoursesCommand { get; }
 
     public TreeViewModel(IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
 
-        GetAllCoursesCommand = AsyncCommand.Create(ReloadTree);
+        ReloadCoursesCommand = AsyncCommand.Create(LoadCourses);
     }
 
-    private async Task ReloadTree(CancellationToken cancellationToken = default)
+    private async Task LoadCourses(CancellationToken cancellationToken = default)
     {
-        var courses = await GetCoursesAsync();
+        _courses = await GetCoursesAsync();
 
-        // Includes
-        await GetGroupsAsync();
-        await GetStudentsAsync();
-
-        Items = new ObservableCollection<TreeItem>(courses.Select(c => new TreeItem(c)));
+        Items = new ObservableCollection<TreeItem>(
+                _courses.Select(c => new TreeItem(
+                    c.Name!, 
+                    "Course", 
+                    children: new ObservableCollection<TreeItem>(_fakeChildren),
+                    onExpandedHandler: OnExpanded))
+            );
     }
 
+    private Task OnExpanded(object sender, EventArgs e)
+    {
+        var item = sender as TreeItem;
+        if (item == null)
+        {
+            throw new ArgumentNullException(nameof(item));
+        }
+        
+        if (item.Tag == "Course")
+        {
+            OnExpandedCourse(item);
+        }
+        else if (item.Tag == "Group")
+        {
+            OnExpandedGroup(item);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private void OnExpandedCourse(TreeItem item)
+    {
+        if (_courses == null)
+        {
+            throw new ArgumentNullException(nameof(_courses));
+        }
+
+        Course? course = _courses.FirstOrDefault(c => c.Name == item.Name);
+        if (course != null)
+        {
+            item.Children = new ObservableCollection<TreeItem>(
+                course.Groups.Select(g => new TreeItem(
+                    g.Name!,
+                    "Group",
+                    onExpandedHandler: OnExpanded,
+                    children: _fakeChildren,
+                    parent: item))
+            );
+        }
+    }
+
+    private void OnExpandedGroup(TreeItem item)
+    {
+        if (_courses == null)
+        {
+            throw new ArgumentNullException(nameof(_courses));
+        }
+
+        Course? course = _courses.FirstOrDefault(c => c.Name == item.Parent!.Name);
+        if (course == null)
+        {
+            throw new ArgumentNullException(nameof(course));
+        }
+
+        Group? group = course.Groups.FirstOrDefault(g => g.Name == item.Name);
+        if (group != null)
+        {
+            item.Children = new ObservableCollection<TreeItem>(
+                group.Students.Select(s => new TreeItem(
+                    s.FullName,
+                    "Student",
+                    parent: item))
+            );
+        }
+    }
     private async Task<IEnumerable<Course>> GetCoursesAsync(CancellationToken cancellationToken = default)
     {
         await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
         return await _unitOfWork.CourseRepository.GetAsync();
     }
 
-    private async Task<IEnumerable<Group>> GetGroupsAsync(CancellationToken cancellationToken = default)
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-        return await _unitOfWork.GroupRepository.GetAsync();
-    }
-
-    private async Task<IEnumerable<Student>> GetStudentsAsync(CancellationToken cancellationToken = default)
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-        return await _unitOfWork.StudentRepository.GetAsync();
-    }
 }

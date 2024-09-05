@@ -23,7 +23,7 @@ public class Student : Entity
     public string FullName => GetFullName();
 
     [ForeignKey(nameof(GroupId))]
-    public Group? Group { get; set; }
+    public virtual Group? Group { get; set; }
 
     public Guid? GroupId { get; set; }
 

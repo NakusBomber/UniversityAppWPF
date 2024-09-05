@@ -20,7 +20,7 @@ public class Teacher : Entity
     public string? LastName { get; set; }
 
     [ForeignKey(nameof(GroupId))]
-    public Group? Group { get; set; }
+    public virtual Group? Group { get; set; }
 
     public Guid? GroupId { get; set; }
 

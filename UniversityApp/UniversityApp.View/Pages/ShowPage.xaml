@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Pages;assembly=UniversityApp.ViewModel"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:UniversityApp.View.Pages"
       mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
@@ -22,10 +23,16 @@
                 Content="Load data"
                 Height="30"
                 Width="120"
-                Command="{Binding TreeViewModel.GetAllCoursesCommand}"/>
+                Command="{Binding TreeViewModel.ReloadCoursesCommand}"/>
 
         <TreeView Grid.Row="1"
-                  ItemsSource="{Binding TreeViewModel.Items}">
+                  DataContext="{Binding TreeViewModel}"
+                  ItemsSource="{Binding Items}">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="TreeViewItem">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                </Style>
+            </TreeView.ItemContainerStyle>
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <TextBlock Text="{Binding Name}"/>

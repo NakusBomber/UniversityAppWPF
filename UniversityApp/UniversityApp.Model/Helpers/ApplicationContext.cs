@@ -19,6 +19,8 @@ public class ApplicationContext : DbContext
                         .SetBasePath(Directory.GetCurrentDirectory())
                         .Build();
 
-        optionsBuilder.UseSqlServer(config.GetConnectionString("DefaultConnection"));
+        optionsBuilder
+            .UseLazyLoadingProxies()
+            .UseSqlServer(config.GetConnectionString("DefaultConnection"));
     }
 }
