@@ -23,6 +23,7 @@
                 Content="Reload"
                 Height="30"
                 Width="120"
+                IsEnabled="{Binding TreeViewModel.ReloadCoursesCommand.Execution.IsCompleted}"
                 Command="{Binding TreeViewModel.ReloadCoursesCommand}"/>
 
         <TreeView Grid.Row="1"
