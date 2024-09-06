@@ -14,6 +14,11 @@ public class ShowViewModel : ViewModelBase
     public ShowViewModel(IUnitOfWork unitOfWork)
 	{
 		_unitOfWork = unitOfWork;
+
         TreeViewModel = new TreeViewModel(unitOfWork);
+        if (TreeViewModel.ReloadCoursesCommand.CanExecute(this))
+        {
+            Task.Run(() => TreeViewModel.ReloadCoursesCommand.Execute(this));
+        }
 	}
 }

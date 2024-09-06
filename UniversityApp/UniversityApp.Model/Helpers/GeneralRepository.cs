@@ -23,9 +23,10 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
     }
     public IEnumerable<TEntity> Get(
         Expression<Func<TEntity, bool>>? filter = null,
-        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null)
+        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
+        bool asNoTracking = false)
     {
-        return GetAsync(filter, orderBy).Result;
+        return GetAsync(filter, orderBy, asNoTracking).Result;
     }
 
     public void Update(TEntity entity)
@@ -50,7 +51,8 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
 
     public async Task<IEnumerable<TEntity>> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null,
-        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null)
+        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
+        bool asNoTracking = false)
     {
         IQueryable<TEntity> dbSet = _entities;
         
@@ -64,7 +66,14 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
             dbSet = (IQueryable<TEntity>)orderBy(dbSet);
         }
 
-        return await dbSet.ToListAsync();
+        if (asNoTracking)
+        {
+            return await dbSet.AsNoTracking().ToListAsync();
+        }
+        else
+        {
+            return await dbSet.ToListAsync();
+        }
     }
 
     public async Task UpdateAsync(TEntity entity)

@@ -60,6 +60,11 @@ public class TreeViewModel : ViewModelBase
             );
     }
 
+    private async Task<IEnumerable<Course>> GetCoursesAsync(CancellationToken cancellationToken = default)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+        return await _unitOfWork.CourseRepository.GetAsync(asNoTracking: true);
+    }
     private Task OnExpanded(object sender, EventArgs e)
     {
         var item = sender as TreeItem;
@@ -125,10 +130,5 @@ public class TreeViewModel : ViewModelBase
             );
         }
     }
-    private async Task<IEnumerable<Course>> GetCoursesAsync(CancellationToken cancellationToken = default)
-    {
-        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-        return await _unitOfWork.CourseRepository.GetAsync();
-    }
-
+  
 }

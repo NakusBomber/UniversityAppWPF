@@ -20,7 +20,7 @@
 
 
         <Button Grid.Row="0"
-                Content="Load data"
+                Content="Reload"
                 Height="30"
                 Width="120"
                 Command="{Binding TreeViewModel.ReloadCoursesCommand}"/>
@@ -39,5 +39,6 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+
     </Grid>
 </Page>
