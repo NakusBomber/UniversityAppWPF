@@ -5,9 +5,12 @@ using System.Windows;
 using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.View.Pages;
+using UniversityApp.View.Services;
 using UniversityApp.ViewModel.Interfaces;
+using UniversityApp.ViewModel.Models;
 using UniversityApp.ViewModel.Stores;
 using UniversityApp.ViewModel.ViewModels;
+using UniversityApp.ViewModel.ViewModels.Dialogs;
 using UniversityApp.ViewModel.ViewModels.Pages;
 
 namespace UniversityApp.View
@@ -29,6 +32,9 @@ namespace UniversityApp.View
             _kernel.Bind<GroupViewModel>().ToSelf();
             _kernel.Bind<StudentViewModel>().ToSelf();
             _kernel.Bind<TeacherViewModel>().ToSelf();
+
+            _kernel.Bind<IWindowService<CreateCourseDialogViewModel, CreateCourseDialogResult>>().To<CreateCourseDialogService>();
+            _kernel.Bind<IWindowService<MessageBoxViewModel>>().To<MessageBoxService>();
 
             MainWindow = new MainWindow();
             MainWindow.DataContext = _kernel.Get<NavigationViewModel>();

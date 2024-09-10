@@ -29,7 +29,8 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
 
     public IEnumerable<TEntity> Get(
         Expression<Func<TEntity, bool>>? filter = null, 
-        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null)
+        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
+        bool asNoTracking = false)
     {
         IQueryable<TEntity> hashSet = (IQueryable<TEntity>)_set;
 
@@ -48,9 +49,10 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
 
     public async Task<IEnumerable<TEntity>> GetAsync(
         Expression<Func<TEntity, bool>>? filter = null, 
-        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null)
+        Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
+        bool asNoTracking = false)
     {
-        return await Task.Run(() => GetAsync(filter, orderBy));
+        return await Task.Run(() => GetAsync(filter, orderBy, asNoTracking));
     }
 
     public void Update(TEntity entity)

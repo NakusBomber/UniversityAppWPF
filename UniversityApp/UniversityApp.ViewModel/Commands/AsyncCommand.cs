@@ -9,18 +9,23 @@ namespace UniversityApp.ViewModel.Commands;
 public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
 {
     private readonly Func<CancellationToken, Task<TResult>> _command;
+    private readonly Func<object?, bool>? _canExecute;
     private readonly CancelAsyncCommand _cancelCommand;
     private NotifyTaskCompletion<TResult>? _execution;
 
-    public AsyncCommand(Func<CancellationToken, Task<TResult>> command)
+    public AsyncCommand(
+        Func<CancellationToken, Task<TResult>> command,
+        Func<object?, bool>? canExecute = null)
     {
         _command = command;
+        _canExecute = canExecute;
         _cancelCommand = new CancelAsyncCommand();
     }
 
     public override bool CanExecute(object? parameter)
     {
-        return Execution == null || Execution.IsCompleted;
+        return (_canExecute == null || _canExecute(parameter)) && 
+            (Execution == null || Execution.IsCompleted);
     }
 
     public override async Task ExecuteAsync(object? parameter)
