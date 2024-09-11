@@ -26,20 +26,31 @@ namespace UniversityApp.View
             _kernel.Bind<IUnitOfWork>().To<UnitOfWork>().InSingletonScope();
             _kernel.Bind<NavigationViewModel>().ToSelf();
             _kernel.Bind<INavigationStore>().To<NavigationStore>().InSingletonScope();
-
-            _kernel.Bind<ShowViewModel>().ToSelf();
-            _kernel.Bind<CourseViewModel>().ToSelf();
-            _kernel.Bind<GroupViewModel>().ToSelf();
-            _kernel.Bind<StudentViewModel>().ToSelf();
-            _kernel.Bind<TeacherViewModel>().ToSelf();
-
-            _kernel.Bind<IWindowService<CreateCourseDialogViewModel, CreateCourseDialogResult>>().To<CreateCourseDialogService>();
-            _kernel.Bind<IWindowService<MessageBoxViewModel>>().To<MessageBoxService>();
+            
+            RegisterPageViewModels();
+            RegisterDialogs();
 
             MainWindow = new MainWindow();
             MainWindow.DataContext = _kernel.Get<NavigationViewModel>();
 
             MainWindow.Show();
+        }
+
+        private void RegisterPageViewModels()
+        {
+            _kernel.Bind<ShowViewModel>().ToSelf();
+            _kernel.Bind<CourseViewModel>().ToSelf();
+            _kernel.Bind<GroupViewModel>().ToSelf();
+            _kernel.Bind<StudentViewModel>().ToSelf();
+            _kernel.Bind<TeacherViewModel>().ToSelf();
+        }
+
+        private void RegisterDialogs()
+        {
+            _kernel.Bind<IWindowService<CourseDialogViewModel, CourseDialogResult>>()
+                .To<CourseDialogService>();
+            _kernel.Bind<IWindowService<MessageBoxViewModel>>()
+                .To<MessageBoxService>();
         }
     }
 

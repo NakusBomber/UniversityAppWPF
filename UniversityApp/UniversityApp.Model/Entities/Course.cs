@@ -27,8 +27,13 @@ public class Course : Entity
         Description = string.Empty;
     }
     public Course(string name, string? description = null)
+        : this(Guid.NewGuid(), name, description)
     {
-        Id = Guid.NewGuid();
+    }
+
+    public Course(Guid id, string? name, string? description)
+    {
+        Id = id;
         Name = name;
         Description = description;
     }
@@ -36,5 +41,10 @@ public class Course : Entity
     public override int GetHashCode()
     {
         return (Id, Name, Description).GetHashCode();
+    }
+
+    public bool FullCompare(Course other)
+    {
+        return Id == other.Id && Name == other.Name && Description == other.Description;
     }
 }

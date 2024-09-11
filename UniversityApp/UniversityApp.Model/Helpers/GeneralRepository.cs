@@ -31,7 +31,10 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
 
     public void Update(TEntity entity)
     {
-        _entities.Attach(entity);
+        if (_context.Entry(entity).State == EntityState.Detached)
+        {
+            _entities.Attach(entity);
+        }
         _entities.Entry(entity).State = EntityState.Modified;
     }
     public void Delete(TEntity entity)

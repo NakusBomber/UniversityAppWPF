@@ -29,7 +29,7 @@
 
             <Button Content="Change"
                     Width="100"
-                    Command=""/>
+                    Command="{Binding OpenUpdateCourseDialogCommand}"/>
 
             <Button Content="Load"
                     Width="60"

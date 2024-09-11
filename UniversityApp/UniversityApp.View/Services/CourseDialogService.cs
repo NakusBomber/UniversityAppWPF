@@ -8,9 +8,9 @@ using UniversityApp.ViewModel.ViewModels.Dialogs;
 
 namespace UniversityApp.View.Services;
 
-public class CreateCourseDialogService : IWindowService<CreateCourseDialogViewModel, CreateCourseDialogResult>
+public class CourseDialogService : IWindowService<CourseDialogViewModel, CourseDialogResult>
 {
-    public CreateCourseDialogResult Show(CreateCourseDialogViewModel viewModel)
+    public CourseDialogResult Show(CourseDialogViewModel viewModel)
     {
         var window = new CreateCourseDialog();
         window.DataContext = viewModel;
@@ -23,13 +23,13 @@ public class CreateCourseDialogService : IWindowService<CreateCourseDialogViewMo
         {
             string? description = viewModel.Description == string.Empty ? null : viewModel.Description;
             var course = new Course(viewModel.Name, description);
-            return new CreateCourseDialogResult(true, course);
+            return new CourseDialogResult(true, course);
         }
 
-        return new CreateCourseDialogResult(false);
+        return new CourseDialogResult(false);
     }
 
-    public async Task<CreateCourseDialogResult> ShowAsync(CreateCourseDialogViewModel viewModel)
+    public async Task<CourseDialogResult> ShowAsync(CourseDialogViewModel viewModel)
     {
         return await Application.Current.Dispatcher.InvokeAsync(() =>
         {

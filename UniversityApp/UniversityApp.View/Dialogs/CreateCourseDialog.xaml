@@ -6,8 +6,10 @@
         xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Dialogs;assembly=UniversityApp.ViewModel"
         xmlns:local="clr-namespace:UniversityApp.View.Dialogs"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance Type=vms:CreateCourseDialogViewModel}"
-        Title="Create course" Height="250" Width="286">
+        WindowStartupLocation="CenterScreen"
+        d:DataContext="{d:DesignInstance Type=vms:CourseDialogViewModel}"
+        Title="{Binding TitleWindow}"
+        Height="250" Width="286">
     <Grid>
         <Label Content="Name" HorizontalAlignment="Left" Margin="18,16,0,0" VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="104,22,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="140"

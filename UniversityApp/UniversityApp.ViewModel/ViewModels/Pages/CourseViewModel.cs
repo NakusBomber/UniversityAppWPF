@@ -15,7 +15,7 @@ namespace UniversityApp.ViewModel.ViewModels.Pages;
 public class CourseViewModel : ViewModelBase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IWindowService<CreateCourseDialogViewModel, CreateCourseDialogResult> _createCourseDialogService;
+    private readonly IWindowService<CourseDialogViewModel, CourseDialogResult> _courseDialogService;
     private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
 
     private ObservableCollection<Course>? _courses;
@@ -49,20 +49,26 @@ public class CourseViewModel : ViewModelBase
     }
 
     public IAsyncCommand OpenCreateCourseDialogCommand {  get; set; }
+    public IAsyncCommand OpenUpdateCourseDialogCommand {  get; set; }
     public IAsyncCommand DeleteCourseCommand { get; set; }
     public IAsyncCommand ReloadCoursesCommand {  get; set; }
 
     [Inject]
     public CourseViewModel(
         IUnitOfWork unitOfWork,
-        IWindowService<CreateCourseDialogViewModel,CreateCourseDialogResult> createCourseDialogService,
+        IWindowService<CourseDialogViewModel,CourseDialogResult> courseDialogService,
         IWindowService<MessageBoxViewModel> messageBoxService)
     {
         _unitOfWork = unitOfWork;
-        _createCourseDialogService = createCourseDialogService;
+        _courseDialogService = courseDialogService;
         _messageBoxService = messageBoxService;
 
         OpenCreateCourseDialogCommand = AsyncCommand.Create(OpenCreateCourseDialogAsync);
+        OpenUpdateCourseDialogCommand = new AsyncCommand<object?>(async _ =>
+        {
+            await OpenUpdateCourseDialogAsync();
+            return null;
+        }, CanOpenUpdateCourseDialog);
         DeleteCourseCommand = new AsyncCommand<object?>(async _ =>
         {
             await DeleteCourseAsync();
@@ -73,12 +79,9 @@ public class CourseViewModel : ViewModelBase
 
     private async Task OpenCreateCourseDialogAsync(CancellationToken cancellationToken = default)
     {
-        var newVM = new CreateCourseDialogViewModel(() =>
-        {
-            Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive == true)?.Close();
-        });
+        var newVM = new CourseDialogViewModel("Create course", CloseActiveWindow);
 
-        CreateCourseDialogResult result = _createCourseDialogService.Show(newVM);
+        CourseDialogResult result = _courseDialogService.Show(newVM);
         if (result.IsSuccess && result.Course != null)
         {
             try
@@ -90,27 +93,81 @@ public class CourseViewModel : ViewModelBase
             }
             catch (DbUpdateException)
             {
-                var messageViewModel = new MessageBoxViewModel(
-                    "Error",
-                    "Already is a course by that name",
-                    () =>
-                    {
-                        Application.Current.Windows.OfType<Window>().First(w => w.IsActive == true)?.Close();
-                    });
-                await _messageBoxService.ShowAsync(messageViewModel);
+                await OpenErrorMessageBoxAsync("Already is a course by that name");
             }
             catch (Exception e)
             {
-                var messageViewModel = new MessageBoxViewModel(
-                    "Error",
-                    e.Message,
-                    () =>
-                    {
-                        Application.Current.Windows.OfType<Window>().First(w => w.IsActive == true)?.Close();
-                    });
-                await _messageBoxService.ShowAsync(messageViewModel);
+                await OpenErrorMessageBoxAsync(e.Message);
             }
         }
+    }
+
+    private async Task OpenUpdateCourseDialogAsync(CancellationToken cancellationToken = default)
+    {
+        if (SelectedCourse == null)
+        {
+            throw new ArgumentNullException(nameof(SelectedCourse));
+        }
+
+        var newVM = new CourseDialogViewModel("Change course", CloseActiveWindow)
+        {
+            Name = SelectedCourse!.Name ?? string.Empty,
+            Description = SelectedCourse!.Description ?? string.Empty,
+        };
+
+        CourseDialogResult result = _courseDialogService.Show(newVM);
+        if (result.IsSuccess && result.Course != null)
+        {
+            try
+            {
+                var courses = await _unitOfWork.CourseRepository.GetAsync(c => c.Id == SelectedCourse.Id);
+                var course = courses.FirstOrDefault();
+                if (course == null)
+                {
+                    throw new ArgumentNullException(nameof(course));
+                }
+                course.Name = result.Course.Name;
+                course.Description = result.Course.Description;
+
+                if (!course.FullCompare(SelectedCourse))
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+                    await _unitOfWork.CourseRepository.UpdateAsync(course);
+                    await _unitOfWork.SaveAsync();
+                    await GetAllCoursesAsync();
+                    SelectedCourse = null;
+                }
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                await OpenErrorMessageBoxAsync(e.Message);
+            }
+            catch (DbUpdateException)
+            {
+                await OpenErrorMessageBoxAsync("Already is a course by that name");
+            }
+            catch (Exception e)
+            {
+                await OpenErrorMessageBoxAsync(e.Message);
+            }
+        }
+    }
+
+    private bool CanOpenUpdateCourseDialog(object? parameter) => SelectedCourse != null;
+    private async Task OpenErrorMessageBoxAsync(string message, CancellationToken cancellationToken = default)
+    {
+        var messageViewModel = new MessageBoxViewModel(
+            "Error",
+            message,
+            CloseActiveWindow
+        );
+
+        await _messageBoxService.ShowAsync(messageViewModel);
+    }
+
+    private void CloseActiveWindow()
+    {
+        Application.Current.Windows.OfType<Window>().First(w => w.IsActive == true)?.Close();
     }
 
     private async Task DeleteCourseAsync(CancellationToken cancellationToken = default)
@@ -133,7 +190,7 @@ public class CourseViewModel : ViewModelBase
     private async Task GetAllCoursesAsync(CancellationToken cancellationToken = default)
     {
         await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-        var list = await _unitOfWork.CourseRepository.GetAsync();
+        var list = await _unitOfWork.CourseRepository.GetAsync(asNoTracking: true);
         Courses = new ObservableCollection<Course>(list);
     }
 }

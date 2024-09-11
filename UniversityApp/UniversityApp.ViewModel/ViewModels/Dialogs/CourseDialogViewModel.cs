@@ -4,9 +4,22 @@ using UniversityApp.ViewModel.Commands;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class CreateCourseDialogViewModel : ViewModelBase
+public class CourseDialogViewModel : ViewModelBase
 {
 	private readonly Action closeAction;
+
+	private string _titleWindow;
+
+	public string TitleWindow
+	{
+		get => _titleWindow;
+		set
+		{
+			_titleWindow = value;
+			OnPropertyChanged();
+		}
+	}
+
 
 	private string _name;
 	public string Name
@@ -34,8 +47,9 @@ public class CreateCourseDialogViewModel : ViewModelBase
 	public ICommand OkCommand { get; }
 	public ICommand CancelCommand { get; }
 
-	public CreateCourseDialogViewModel(Action closeAction)
+	public CourseDialogViewModel(string title, Action closeAction)
 	{
+		_titleWindow = title;
 		this.closeAction = closeAction;
 		_name = string.Empty;
 		_description = string.Empty;
