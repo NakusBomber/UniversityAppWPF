@@ -74,7 +74,7 @@ public class CourseViewModel : ViewModelBase
             await DeleteCourseAsync();
             return null;
         }, CanDeleteCourse);
-        ReloadCoursesCommand = AsyncCommand.Create(GetAllCoursesAsync);
+        ReloadCoursesCommand = AsyncCommand.Create(ReloadAllCoursesAsync);
     }
 
     private async Task OpenCreateCourseDialogAsync(CancellationToken cancellationToken = default)
@@ -89,7 +89,7 @@ public class CourseViewModel : ViewModelBase
                 await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                 await _unitOfWork.CourseRepository.CreateAsync(result.Course);
                 await _unitOfWork.SaveAsync();
-                await GetAllCoursesAsync();
+                await ReloadAllCoursesAsync();
             }
             catch (DbUpdateException)
             {
@@ -134,7 +134,7 @@ public class CourseViewModel : ViewModelBase
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.CourseRepository.UpdateAsync(course);
                     await _unitOfWork.SaveAsync();
-                    await GetAllCoursesAsync();
+                    await ReloadAllCoursesAsync();
                     SelectedCourse = null;
                 }
             }
@@ -179,7 +179,7 @@ public class CourseViewModel : ViewModelBase
         await _unitOfWork.CourseRepository.DeleteAsync(SelectedCourse);
         await _unitOfWork.SaveAsync();
         SelectedCourse = null;
-        await GetAllCoursesAsync();
+        await ReloadAllCoursesAsync();
     }
 
     private bool CanDeleteCourse(object? parameter)
@@ -187,7 +187,7 @@ public class CourseViewModel : ViewModelBase
         return SelectedCourse != null && SelectedCourse.Groups.Count == 0;
     }
 
-    private async Task GetAllCoursesAsync(CancellationToken cancellationToken = default)
+    private async Task ReloadAllCoursesAsync(CancellationToken cancellationToken = default)
     {
         await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
         var list = await _unitOfWork.CourseRepository.GetAsync(asNoTracking: true);

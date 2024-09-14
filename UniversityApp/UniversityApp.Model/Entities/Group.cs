@@ -22,26 +22,48 @@ public class Group : Entity
     [Required]
     public Guid? CourseId { get; set; }
 
-    public virtual List<Student> Students { get; set; } = new List<Student>();
+    [Required]
+    [ForeignKey(nameof(TeacherId))]
+    public virtual Teacher? Teacher { get; set; }
 
-    public virtual List<Teacher> Teachers { get; set; } = new List<Teacher>();
+    [Required]
+    public Guid? TeacherId { get; set; }
+
+    public virtual List<Student> Students { get; set; } = new List<Student>();
     public Group()
     {
         Id = Guid.Empty;
         Name = string.Empty;
         Course = null;
         CourseId = Guid.Empty;
+        Teacher = null;
+        TeacherId = Guid.Empty;
     }
 
-    public Group(string name, Course course)
+    public Group(string name, Course course, Teacher teacher)
+        : this(Guid.NewGuid(), name, course, teacher)
     {
-        Id = Guid.NewGuid();
+    }
+
+    public Group(Guid id, string name, Course course, Teacher teacher)
+    {
+        Id = id;
         Name = name;
         Course = course;
         CourseId = course.Id;
+        Teacher = teacher;
+        TeacherId = teacher.Id;
     }
     public override int GetHashCode()
     {
-        return (Id, Name, CourseId).GetHashCode();
+        return (Id, Name, CourseId, TeacherId).GetHashCode();
+    }
+
+    public bool FullCompare(Group other)
+    {
+        return this.Id == other.Id &&
+            this.Name == other.Name &&
+            this.Course == other.Course &&
+            this.Teacher == other.Teacher;
     }
 }

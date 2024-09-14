@@ -51,6 +51,8 @@ namespace UniversityApp.View
                 .To<CourseDialogService>();
             _kernel.Bind<IWindowService<MessageBoxViewModel>>()
                 .To<MessageBoxService>();
+            _kernel.Bind<IWindowService<GroupDialogViewModel, GroupDialogResult>>()
+                .To<GroupDialogService>();
         }
     }
 

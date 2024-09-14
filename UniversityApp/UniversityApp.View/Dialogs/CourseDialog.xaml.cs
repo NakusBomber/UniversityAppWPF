@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace UniversityApp.View.Dialogs
 {
     /// <summary>
-    /// Логика взаимодействия для CreateCourseDialog.xaml
+    /// Логика взаимодействия для CourseDialog.xaml
     /// </summary>
-    public partial class CreateCourseDialog : Window
+    public partial class CourseDialog : Window
     {
-        public CreateCourseDialog()
+        public CourseDialog()
         {
             InitializeComponent();
         }

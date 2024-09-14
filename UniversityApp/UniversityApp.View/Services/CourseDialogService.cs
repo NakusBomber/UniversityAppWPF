@@ -12,7 +12,7 @@ public class CourseDialogService : IWindowService<CourseDialogViewModel, CourseD
 {
     public CourseDialogResult Show(CourseDialogViewModel viewModel)
     {
-        var window = new CreateCourseDialog();
+        var window = new CourseDialog();
         window.DataContext = viewModel;
 
         window.ShowDialog();

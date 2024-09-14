@@ -19,18 +19,14 @@ public class Teacher : Entity
     [StringLength(50)]
     public string? LastName { get; set; }
 
-    [ForeignKey(nameof(GroupId))]
-    public virtual Group? Group { get; set; }
-
-    public Guid? GroupId { get; set; }
+    [NotMapped]
+    public string FullName => GetFullName();
 
     public Teacher()
     {
         Id = Guid.Empty;
         FirstName = string.Empty;
         LastName = string.Empty;
-        Group = null;
-        GroupId = Guid.Empty;
     }
 
     public Teacher(string firstName, string lastName, Group? group = null)
@@ -38,12 +34,18 @@ public class Teacher : Entity
         Id = Guid.NewGuid();
         FirstName = firstName;
         LastName = lastName;
-        Group = group;
-        GroupId = group == null ? null : group.Id;
     }
     public override int GetHashCode()
     {
-        return (Id, FirstName, LastName, GroupId).GetHashCode();
+        return (Id, FirstName, LastName).GetHashCode();
+    }
+
+    private string GetFullName()
+    {
+        string spacer = FirstName != null && LastName != null
+                        ? " "
+                        : "";
+        return $"{FirstName}{spacer}{LastName}";
     }
 
 }
