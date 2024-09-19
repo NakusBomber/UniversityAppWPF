@@ -9,7 +9,7 @@ public interface IWindowService<TViewModel ,TResult> where TViewModel : ViewMode
     public Task<TResult> ShowAsync(TViewModel viewModel);
 }
 
-public interface IWindowService<TViewModel> where TViewModel : class
+public interface IWindowService<TViewModel> where TViewModel : ViewModelBase
 {
     public void Show(TViewModel viewModel);
     public Task ShowAsync(TViewModel viewModel);

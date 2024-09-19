@@ -7,6 +7,7 @@
         xmlns:local="clr-namespace:UniversityApp.View.Dialogs"
         xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Dialogs;assembly=UniversityApp.ViewModel"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         d:DataContext="{d:DesignInstance Type=vms:GroupDialogViewModel}"
         Title="{Binding TitleWindow}"

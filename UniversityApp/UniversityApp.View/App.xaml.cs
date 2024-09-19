@@ -28,6 +28,7 @@ namespace UniversityApp.View
             _kernel.Bind<INavigationStore>().To<NavigationStore>().InSingletonScope();
             
             RegisterPageViewModels();
+            _kernel.Bind<IExporter>().To<Exporter>();
             RegisterDialogs();
 
             MainWindow = new MainWindow();
@@ -53,6 +54,8 @@ namespace UniversityApp.View
                 .To<MessageBoxService>();
             _kernel.Bind<IWindowService<GroupDialogViewModel, GroupDialogResult>>()
                 .To<GroupDialogService>();
+            _kernel.Bind<IWindowService<ExportDialogViewModel>>()
+                .To<ExportDialogService>();
         }
     }
 

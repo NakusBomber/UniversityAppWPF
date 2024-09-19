@@ -36,6 +36,14 @@
                     Width="60"
                     Command="{Binding ReloadGroupsCommand}"/>
 
+            <Button Content="Import"
+                    Width="100"
+                    Command="{Binding ImportCommand}"/>
+
+            <Button Content="Export"
+                    Width="100"
+                    Command="{Binding ExportCommand}"/>
+
         </StackPanel>
 
 

@@ -9,6 +9,7 @@
         xmlns:helpers="clr-namespace:UniversityApp.ViewModel.Helpers;assembly=UniversityApp.ViewModel"
         mc:Ignorable="d"
         ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
         Title="UniversityApp"
         Height="450"
         Width="800"

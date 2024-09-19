@@ -3,6 +3,7 @@ using Ninject;
 using System.Collections.ObjectModel;
 using System.Windows;
 using UniversityApp.Model.Entities;
+using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
 using UniversityApp.ViewModel.Interfaces;
@@ -16,6 +17,7 @@ public class GroupViewModel : ViewModelBase
     private readonly IUnitOfWork _unitOfWork;
 	private readonly IWindowService<GroupDialogViewModel, GroupDialogResult> _groupDialogService;
 	private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
+    private readonly IWindowService<ExportDialogViewModel> _exportDialogService;
 
 	private ObservableCollection<Group>? _groups;
 
@@ -52,14 +54,19 @@ public class GroupViewModel : ViewModelBase
 	public IAsyncCommand OpenUpdateGroupDialogCommand { get; }
 	public IAsyncCommand DeleteGroupCommand { get; }
 	public IAsyncCommand ReloadGroupsCommand { get; }
+    public IAsyncCommand ImportCommand { get; }
+    public IAsyncCommand ExportCommand { get; }
 
 	[Inject]
 	public GroupViewModel(
 		IUnitOfWork unitOfWork,
+        IExporter exporter,
 		IWindowService<GroupDialogViewModel, GroupDialogResult> groupDialogService,
+        IWindowService<ExportDialogViewModel> exportDialogService,
         IWindowService<MessageBoxViewModel> messageBoxService)
 	{
 		_unitOfWork = unitOfWork;
+        _exportDialogService = exportDialogService;
 		_groupDialogService = groupDialogService;
 		_messageBoxService = messageBoxService;
 
@@ -75,7 +82,29 @@ public class GroupViewModel : ViewModelBase
 			return null;
 		}, CanDeleteGroup);
 		ReloadGroupsCommand = AsyncCommand.Create(ReloadAllGroupsAsync);
+
+        ExportCommand = new AsyncCommand<object?>(async _ =>
+        {
+            await ExportStudentsAsync(exporter);
+            return null;
+        }, CanExportStudents);
 	}
+
+    private async Task ExportStudentsAsync(IExporter exporter, CancellationToken cancellationToken = default)
+    {
+        if(SelectedGroup == null)
+        {
+            throw new ArgumentNullException(nameof(SelectedGroup));
+        }
+
+        var newVM = new ExportDialogViewModel(SelectedGroup, exporter);
+        await _exportDialogService.ShowAsync(newVM);
+    }
+    private bool CanExportStudents(object? parameter)
+    {
+        return SelectedGroup != null;
+    }
+
     private async Task OpenCreateGroupDialogAsync(CancellationToken cancellationToken = default)
     {
         var newVM = new GroupDialogViewModel("Create group", CloseActiveWindow, _unitOfWork);
