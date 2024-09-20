@@ -10,17 +10,18 @@
         Title="{Binding Title}"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Height="140"
+        SizeToContent="Height"
         Width="400">
-    <Grid>
+    <Grid Height="Auto">
         <StackPanel Orientation="Vertical"
                     Height="Auto"
                     VerticalAlignment="Center">
-            <TextBlock Text="{Binding Message, FallbackValue=MESSAGE}"
+            <TextBlock Text="{Binding Message, FallbackValue=INFO_MESSAGE}"
+                       TextWrapping="Wrap"
                        Height="Auto"
                        Padding="20"/>
             <Button Content="OK"
-                    Margin="0, 15, 0, 0"
+                    Margin="0,15"
                     Width="50"
                     Command="{Binding CloseCommand}"/>
         </StackPanel>
