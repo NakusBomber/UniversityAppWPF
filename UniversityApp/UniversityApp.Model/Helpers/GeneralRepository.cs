@@ -28,6 +28,10 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
     {
         return GetAsync(filter, orderBy, asNoTracking).Result;
     }
+    public TEntity GetById(Guid id)
+    {
+        return GetByIdAsync(id).Result;
+    }
 
     public void Update(TEntity entity)
     {
@@ -77,6 +81,16 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
         {
             return await dbSet.ToListAsync();
         }
+    }
+
+    public async Task<TEntity> GetByIdAsync(Guid id)
+    {
+        var entity = await _entities.FirstOrDefaultAsync(e => e.Id == id);
+        if (entity == null)
+        {
+            throw new InvalidOperationException("Entity by this Id not found");
+        }
+        return entity;
     }
 
     public async Task UpdateAsync(TEntity entity)

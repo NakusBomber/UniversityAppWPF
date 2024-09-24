@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Win32;
 using Ninject;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -60,7 +61,8 @@ public class GroupViewModel : ViewModelBase
 	[Inject]
 	public GroupViewModel(
 		IUnitOfWork unitOfWork,
-        IExporter exporter,
+        IImporter<Student> studentImporter,
+        IExporter<Student> studentExporter,
 		IWindowService<GroupDialogViewModel, GroupDialogResult> groupDialogService,
         IWindowService<ExportDialogViewModel> exportDialogService,
         IWindowService<MessageBoxViewModel> messageBoxService)
@@ -83,14 +85,55 @@ public class GroupViewModel : ViewModelBase
 		}, CanDeleteGroup);
 		ReloadGroupsCommand = AsyncCommand.Create(ReloadAllGroupsAsync);
 
+        ImportCommand = new AsyncCommand<object?>(async _ =>
+        {
+            await ImportStudentsAsync(studentImporter);
+            return null;
+        }, CanImportExportStudents);
         ExportCommand = new AsyncCommand<object?>(async _ =>
         {
-            await ExportStudentsAsync(exporter);
+            await ExportStudentsAsync(studentExporter);
             return null;
-        }, CanExportStudents);
+        }, CanImportExportStudents);
 	}
 
-    private async Task ExportStudentsAsync(IExporter exporter, CancellationToken cancellationToken = default)
+    private async Task ImportStudentsAsync(IImporter<Student> importer, CancellationToken cancellationToken = default)
+    {
+        if (SelectedGroup == null)
+        {
+            throw new ArgumentNullException(nameof(SelectedGroup));
+        }
+        OpenFileDialog fileDialog = new OpenFileDialog();
+        fileDialog.Filter = EExportTypes.CSV.GetFilter();
+        fileDialog.CheckPathExists = true;
+        fileDialog.CheckFileExists = true;
+
+        if (fileDialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        string path = fileDialog.FileName;
+        IEnumerable<Student> importedData = await importer.ImportAsync(path);
+        
+        if(!importedData.Any())
+        {
+            return;
+        }
+
+
+        var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
+        await RemoveStudentsFromGroupAsync(group);
+        
+        foreach (Student student in importedData)
+        {
+            student.Group = group;
+            await _unitOfWork.StudentRepository.CreateAsync(student);
+        }
+        await _unitOfWork.SaveAsync();
+        await ReloadAllGroupsAsync();
+    }
+    private async Task ExportStudentsAsync(IExporter<Student> exporter, CancellationToken cancellationToken = default)
     {
         if(SelectedGroup == null)
         {
@@ -100,7 +143,7 @@ public class GroupViewModel : ViewModelBase
         var newVM = new ExportDialogViewModel(SelectedGroup, exporter);
         await _exportDialogService.ShowAsync(newVM);
     }
-    private bool CanExportStudents(object? parameter)
+    private bool CanImportExportStudents(object? parameter)
     {
         return SelectedGroup != null;
     }
@@ -150,15 +193,10 @@ public class GroupViewModel : ViewModelBase
         {
             try
             {
-                var groups = await _unitOfWork.GroupRepository.GetAsync(g => g.Id == SelectedGroup.Id);
-                var group = groups.FirstOrDefault();
-                if(group == null)
-                {
-                    throw new ArgumentNullException(nameof(group));
-                }
+                var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
                 group.Name = result.Group.Name;
-                group.Course = (await _unitOfWork.CourseRepository.GetAsync(c => c.Id == result.Group.Course!.Id)).First();
-                group.Teacher = (await _unitOfWork.TeacherRepository.GetAsync(t => t.Id == result.Group.Teacher!.Id)).First();
+                group.Course = await _unitOfWork.CourseRepository.GetByIdAsync(result.Group.Course!.Id);
+                group.Teacher = await _unitOfWork.TeacherRepository.GetByIdAsync(result.Group.Teacher!.Id);
 
                 if (!group.FullCompare(SelectedGroup))
                 {
@@ -210,13 +248,10 @@ public class GroupViewModel : ViewModelBase
 		{
 			throw new ArgumentNullException(nameof(SelectedGroup));
 		}
-		await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
-        foreach (Student student in SelectedGroup.Students)
-        {
-            student.Group = null;
-            await _unitOfWork.StudentRepository.UpdateAsync(student);
-        }
-		await _unitOfWork.GroupRepository.DeleteAsync(SelectedGroup);
+
+        var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
+        await RemoveStudentsFromGroupAsync(group);
+		await _unitOfWork.GroupRepository.DeleteAsync(group);
 		await _unitOfWork.SaveAsync();
 
 		SelectedGroup = null;
@@ -233,4 +268,20 @@ public class GroupViewModel : ViewModelBase
 		var list = await _unitOfWork.GroupRepository.GetAsync(asNoTracking: true);
 		Groups = new ObservableCollection<Group>(list);
 	}
+    
+    /// <summary>
+    /// Remove students from group (without saving db)
+    /// </summary>
+    /// <param name="group"></param>
+    /// <returns></returns>
+    private async Task RemoveStudentsFromGroupAsync(Group group)
+    {
+        await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
+        var students = await _unitOfWork.StudentRepository.GetAsync(s => s.GroupId == group.Id);
+        foreach (Student student in students)
+        {
+            student.Group = null;
+            await _unitOfWork.StudentRepository.UpdateAsync(student);
+        }
+    }
 }

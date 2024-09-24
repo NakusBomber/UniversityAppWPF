@@ -4,7 +4,7 @@ using UniversityApp.Model.Repositories;
 
 namespace UniversityApp.Model.Helpers;
 
-public class UnitOfWork : IUnitOfWork
+public class UnitOfWork : IUnitOfWork, IDisposable
 {
     private ApplicationContext _context = new ApplicationContext();
 

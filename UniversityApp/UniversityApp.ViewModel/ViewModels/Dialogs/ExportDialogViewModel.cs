@@ -12,7 +12,7 @@ namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 public class ExportDialogViewModel : ViewModelBase
 {
 	private readonly Group _group;
-	private readonly IExporter _exporter;
+	private readonly IExporter<Student> _exporter;
 
 	private bool _isNeedHeaderline;
 	public bool IsNeedHeaderline
@@ -56,7 +56,7 @@ public class ExportDialogViewModel : ViewModelBase
 	public IAsyncCommand ExportCommand { get; }
 
 
-	public ExportDialogViewModel(Group group, IExporter exporter)
+	public ExportDialogViewModel(Group group, IExporter<Student> exporter)
 	{
 		_group = group;
 		_exporter = exporter;
@@ -82,7 +82,7 @@ public class ExportDialogViewModel : ViewModelBase
 			string path = saveFileDialog.FileName;
             _exporter.IsNeedHeaderline = IsNeedHeaderline;
             _exporter.ExportType = SelectedExtension;
-            _exporter.SetPath(path);
+            _exporter.FilePath = path;
             await _exporter.ExportAsync(_group.Students);
         }
     }

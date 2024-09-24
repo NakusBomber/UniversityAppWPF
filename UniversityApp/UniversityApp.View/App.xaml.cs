@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Data;
 using System.Windows;
+using UniversityApp.Model.Entities;
 using UniversityApp.Model.Helpers;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.View.Pages;
@@ -28,7 +29,7 @@ namespace UniversityApp.View
             _kernel.Bind<INavigationStore>().To<NavigationStore>().InSingletonScope();
             
             RegisterPageViewModels();
-            _kernel.Bind<IExporter>().To<Exporter>();
+            RegisterImportExport();
             RegisterDialogs();
 
             MainWindow = new MainWindow();
@@ -56,6 +57,14 @@ namespace UniversityApp.View
                 .To<GroupDialogService>();
             _kernel.Bind<IWindowService<ExportDialogViewModel>>()
                 .To<ExportDialogService>();
+        }
+
+        private void RegisterImportExport()
+        {
+            _kernel.Bind<ILineIterator>().To<LineIterator>();
+
+            _kernel.Bind<IImporter<Student>>().To<StudentImporter>();
+            _kernel.Bind<IExporter<Student>>().To<StudentExporter>();
         }
     }
 

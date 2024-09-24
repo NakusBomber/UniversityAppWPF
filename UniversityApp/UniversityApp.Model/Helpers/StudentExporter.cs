@@ -2,23 +2,41 @@
 using MigraDoc.Rendering;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Metadata;
 using UniversityApp.Model.Entities;
 using UniversityApp.Model.Interfaces;
 using Xceed.Words.NET;
 
 namespace UniversityApp.Model.Helpers;
 
-public class Exporter : IExporter
+public class StudentExporter : IExporter<Student>
 {
     private const char _csvSeparator = ',';
     private const string _fontFamily = "Arial";
     private const double _fontSize = 10;
+
     private string? _filePath;
-    
+    public string? FilePath
+    {
+        get => _filePath;
+        set
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("Path is null or empty");
+            }
+
+            if (!Path.HasExtension(value))
+                
+            {
+                throw new ArgumentException("Path hasn't extension");
+            }
+
+            _filePath = value;
+        }
+    }
     public bool IsNeedHeaderline { get; set; }
     public EExportTypes ExportType { get; set; }
-    public Exporter()
+    public StudentExporter()
     {
         IsNeedHeaderline = false;
         ExportType = EExportTypes.CSV;

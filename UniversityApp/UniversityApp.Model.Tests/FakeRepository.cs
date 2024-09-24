@@ -72,6 +72,21 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         await Task.Run(() => Update(entity));
     }
 
+    public TEntity GetById(Guid id)
+    {
+        var entity = _set.FirstOrDefault(e => e.Id == id);
+        if (entity == null)
+        {
+            throw new InvalidOperationException("Not found entity by this Id");
+        }
+        return entity;
+    }
+
+    public async Task<TEntity> GetByIdAsync(Guid id)
+    {
+        return await Task.Run(() => GetById(id));
+    }
+
     public FakeRepository() : this(new HashSet<TEntity>())
     {
     }
