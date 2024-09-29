@@ -175,7 +175,8 @@ public class StudentViewModel : ViewModelBase
             throw new ArgumentNullException(nameof(SelectedStudent));
         }
 
-        await _unitOfWork.StudentRepository.DeleteAsync(SelectedStudent);
+        var student = await _unitOfWork.StudentRepository.GetByIdAsync(SelectedStudent.Id);
+        await _unitOfWork.StudentRepository.DeleteAsync(student);
         await _unitOfWork.SaveAsync();
 
         SelectedStudent = null;

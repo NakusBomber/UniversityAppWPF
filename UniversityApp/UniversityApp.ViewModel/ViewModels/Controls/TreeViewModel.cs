@@ -101,7 +101,8 @@ public class TreeViewModel : ViewModelBase
                     "Group",
                     onExpandedHandler: OnExpanded,
                     children: _fakeChildren,
-                    parent: item))
+                    parent: item,
+                    toolTipText: g.Teacher?.FullName))
             );
         }
     }

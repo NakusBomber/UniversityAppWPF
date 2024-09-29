@@ -59,6 +59,8 @@ namespace UniversityApp.View
                 .To<ExportDialogService>();
             _kernel.Bind<IWindowService<StudentDialogViewModel, StudentDialogResult>>()
                 .To<StudentDialogService>();
+            _kernel.Bind<IWindowService<TeacherDialogViewModel, TeacherDialogResult>>()
+                .To<TeacherDialogService>();
         }
 
         private void RegisterImportExport()

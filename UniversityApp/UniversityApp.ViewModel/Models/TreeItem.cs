@@ -12,6 +12,7 @@ public class TreeItem : ViewModelBase
 	public string Name { get; set; }
 	public string Tag { get; set; }
 
+	public string? ToolTipText { get; set; }
 	public TreeItem? Parent { get; set; }
 
 	private bool _isExpanded = false;
@@ -51,7 +52,8 @@ public class TreeItem : ViewModelBase
 		string? tag = null,
 		ObservableCollection<TreeItem>? children = null,
         TreeViewItemHasBeenExpandedHandler? onExpandedHandler = null,
-		TreeItem? parent = null)
+		TreeItem? parent = null,
+		string? toolTipText = null)
 	{
 		Name = name;
 		Tag = tag == null ? string.Empty : tag;
@@ -61,6 +63,7 @@ public class TreeItem : ViewModelBase
             TreeViewItemHasBeenExpanded += onExpandedHandler;
 		}
 		Parent = parent;
+		ToolTipText = toolTipText;
 	}
 
 }

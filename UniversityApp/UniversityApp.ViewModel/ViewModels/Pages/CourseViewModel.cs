@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using Ninject;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -120,12 +121,7 @@ public class CourseViewModel : ViewModelBase
         {
             try
             {
-                var courses = await _unitOfWork.CourseRepository.GetAsync(c => c.Id == SelectedCourse.Id);
-                var course = courses.FirstOrDefault();
-                if (course == null)
-                {
-                    throw new ArgumentNullException(nameof(course));
-                }
+                var course = await _unitOfWork.CourseRepository.GetByIdAsync(SelectedCourse.Id);
                 course.Name = result.Course.Name;
                 course.Description = result.Course.Description;
 
@@ -176,7 +172,9 @@ public class CourseViewModel : ViewModelBase
         {
             throw new ArgumentNullException(nameof(SelectedCourse));
         }
-        await _unitOfWork.CourseRepository.DeleteAsync(SelectedCourse);
+
+        var course = await _unitOfWork.CourseRepository.GetByIdAsync(SelectedCourse.Id);
+        await _unitOfWork.CourseRepository.DeleteAsync(course);
         await _unitOfWork.SaveAsync();
         SelectedCourse = null;
         await ReloadAllCoursesAsync();

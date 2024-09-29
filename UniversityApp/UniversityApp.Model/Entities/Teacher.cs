@@ -22,6 +22,8 @@ public class Teacher : Entity
     [NotMapped]
     public string FullName => GetFullName();
 
+    public virtual List<Group> Groups { get; set; } = new List<Group>();
+
     public Teacher()
     {
         Id = Guid.Empty;
@@ -29,7 +31,7 @@ public class Teacher : Entity
         LastName = string.Empty;
     }
 
-    public Teacher(string firstName, string lastName, Group? group = null)
+    public Teacher(string firstName, string lastName)
     {
         Id = Guid.NewGuid();
         FirstName = firstName;
@@ -40,6 +42,12 @@ public class Teacher : Entity
         return (Id, FirstName, LastName).GetHashCode();
     }
 
+    public bool FullCompare(Teacher other)
+    {
+        return this.Id == other.Id &&
+            this.FirstName == other.FirstName &&
+            this.LastName == other.LastName;
+    }
     private string GetFullName()
     {
         string spacer = FirstName != null && LastName != null
