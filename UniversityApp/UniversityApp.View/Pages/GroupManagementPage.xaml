@@ -9,7 +9,6 @@
       d:DataContext="{d:DesignInstance Type=vms:GroupViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="GroupManagementPage">
-
     <Grid>
 
         <Grid.RowDefinitions>

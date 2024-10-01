@@ -11,6 +11,7 @@
             <ResourceDictionary.MergedDictionaries>
 
                 <ResourceDictionary Source="DataTemplateNavigation.xaml"/>
+                <ResourceDictionary Source="Styles/ErrorElementStyle.xaml"/>
 
             </ResourceDictionary.MergedDictionaries>
 

@@ -13,6 +13,11 @@
         Title="{Binding TitleWindow}"
         Height="240"
         Width="300">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding OkCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadAllDataCommand}" />
@@ -34,7 +39,8 @@
                    Text="Last name"
                    VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="100,26,0,0" TextWrapping="Wrap"
-                 Text="{Binding FirstName}"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Top" Width="159"/>
         <TextBlock HorizontalAlignment="Left" Margin="20,108,0,0" TextWrapping="Wrap"
                    Text="Group" VerticalAlignment="Top"/>
@@ -50,7 +56,8 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <TextBox HorizontalAlignment="Left" Margin="100,66,0,0" TextWrapping="Wrap"
-                 Text="{Binding LastName}"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Top" Width="159"/>
         <Button Content="Clear"
                 Width="50"

@@ -4,10 +4,11 @@ using UniversityApp.Model.Entities;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
 using UniversityApp.ViewModel.Interfaces;
+using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class StudentDialogViewModel : ViewModelBase
+public class StudentDialogViewModel : ValidationViewModelBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly Action _closeAction;
@@ -35,6 +36,7 @@ public class StudentDialogViewModel : ViewModelBase
         set
         {
             _firstName = value;
+            ValidateFirstName();
             OnPropertyChanged();
         }
     }
@@ -47,9 +49,11 @@ public class StudentDialogViewModel : ViewModelBase
         set
         {
             _lastName = value;
+            ValidateLastName();
             OnPropertyChanged();
         }
     }
+
 
     private Group? _group;
 
@@ -97,13 +101,30 @@ public class StudentDialogViewModel : ViewModelBase
 
         LoadAllDataCommand = AsyncCommand.Create(LoadAllDataAsync);
 
-        ClearGroupCommand = new RelayCommand(o => Group = null);
-        OkCommand = new RelayCommand(OkClose);
+        ClearGroupCommand = new RelayCommand(o => Group = null, o => Group != null);
+        OkCommand = new RelayCommand(OkClose, CanOk);
         CancelCommand = new RelayCommand(CancelClose);
         IsSuccess = false;
         _titleWindow = titleWindow;
         _firstName = string.Empty;
         _lastName = string.Empty;
+
+        ValidateAll();
+    }
+
+
+    private void ValidateAll()
+    {
+        ValidateFirstName();
+        ValidateLastName();
+    }
+
+    private void ValidateFirstName() => Validate(_firstName, new EntityNameValidationRule(1, 50), nameof(FirstName));
+    private void ValidateLastName() => Validate(_lastName, new EntityNameValidationRule(1, 50), nameof(LastName));
+
+    private bool CanOk(object? arg)
+    {
+        return !HasErrors;
     }
 
     private void OkClose(object? parameter)

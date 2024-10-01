@@ -9,7 +9,6 @@
       d:DataContext="{d:DesignInstance Type=vms:StudentViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="StudentManagementPage">
-
     <Grid>
 
         <Grid.RowDefinitions>

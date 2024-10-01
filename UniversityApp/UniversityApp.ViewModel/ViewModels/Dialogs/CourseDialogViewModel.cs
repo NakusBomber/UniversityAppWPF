@@ -1,10 +1,13 @@
-﻿using System.Windows.Input;
+﻿using Azure.Core;
+using System.ComponentModel.DataAnnotations;
+using System.Windows.Input;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
+using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class CourseDialogViewModel : ViewModelBase
+public class CourseDialogViewModel : ValidationViewModelBase
 {
 	private readonly Action closeAction;
 
@@ -22,12 +25,14 @@ public class CourseDialogViewModel : ViewModelBase
 
 
 	private string _name;
-	public string Name
+
+    public string Name
 	{
 		get => _name;
 		set
 		{
 			_name = value;
+			ValidateName();
 			OnPropertyChanged();
 		}
 	}
@@ -39,6 +44,7 @@ public class CourseDialogViewModel : ViewModelBase
 		set
 		{
 			_description = value;
+			ValidateDescription();
 			OnPropertyChanged();
 		}
 	}
@@ -55,11 +61,34 @@ public class CourseDialogViewModel : ViewModelBase
 		_description = string.Empty;
 
 		IsSuccess = false;
-		OkCommand = new RelayCommand(OkClose);
+		OkCommand = new RelayCommand(OkClose, CanOk);
 		CancelCommand = new RelayCommand(CancelClose);
+
+		ValidateAll();
 	}
 
-	private void OkClose(object? parameter)
+	private void ValidateAll()
+	{
+		ValidateName();
+		ValidateDescription();
+    }
+	
+	private void ValidateName()
+	{
+        Validate(_name, new EntityNameValidationRule(1, 75), nameof(Name));
+    }
+	
+	private void ValidateDescription()
+	{
+        Validate(_description, new LengthValidationRule(0, 300), nameof(Description));
+    }
+   
+	private bool CanOk(object? arg)
+    {
+		return !HasErrors;
+    }
+
+    private void OkClose(object? parameter)
 	{
 		IsSuccess = true;
 		closeAction?.Invoke();

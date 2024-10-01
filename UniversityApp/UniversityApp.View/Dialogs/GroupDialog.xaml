@@ -13,6 +13,11 @@
         Title="{Binding TitleWindow}"
         Height="240"
         Width="300">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding OkCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadAllDataCommand}" />
@@ -34,12 +39,14 @@
                    Text="Course"
                    VerticalAlignment="Top"/>
         <TextBox HorizontalAlignment="Left" Margin="100,26,0,0" TextWrapping="Wrap"
-                 Text="{Binding Name}"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
                  VerticalAlignment="Top" Width="159"/>
         <TextBlock HorizontalAlignment="Left" Margin="20,108,0,0" TextWrapping="Wrap" Text="Teacher" VerticalAlignment="Top"/>
         <ComboBox HorizontalAlignment="Left"
                   Margin="100,64,0,0"
-                  SelectedItem="{Binding Course}"
+                  Style="{StaticResource ErrorElementStyle}"
+                  SelectedItem="{Binding Course, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Courses}"
                   VerticalAlignment="Top"
                   Width="120">
@@ -51,7 +58,8 @@
         </ComboBox>
 
         <ComboBox HorizontalAlignment="Left" Margin="100,104,0,0"
-                  SelectedItem="{Binding Teacher}"
+                  Style="{StaticResource ErrorElementStyle}"
+                  SelectedItem="{Binding Teacher, UpdateSourceTrigger=PropertyChanged}"
                   ItemsSource="{Binding Teachers}"
                   VerticalAlignment="Top" Width="120">
             <ComboBox.ItemTemplate>

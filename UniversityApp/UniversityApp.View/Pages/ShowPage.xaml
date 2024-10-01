@@ -10,6 +10,9 @@
       d:DesignHeight="450" d:DesignWidth="800"
       d:DataContext="{d:DesignInstance Type=vms:ShowViewModel}"
       Title="ShowPage">
+    <Page.InputBindings>
+        <KeyBinding Key="R" Modifiers="Control" Command="{Binding TreeViewModel.ReloadCoursesCommand}" />
+    </Page.InputBindings>
 
     <Grid>
 

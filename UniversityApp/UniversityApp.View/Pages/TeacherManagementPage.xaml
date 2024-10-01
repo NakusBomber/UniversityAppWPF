@@ -9,7 +9,6 @@
       d:DataContext="{d:DesignInstance Type=vms:TeacherViewModel}"
       d:DesignHeight="450" d:DesignWidth="800"
       Title="TeacherManagementPage">
-
     <Grid>
 
         <Grid.RowDefinitions>

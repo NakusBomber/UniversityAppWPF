@@ -4,10 +4,11 @@ using UniversityApp.Model.Entities;
 using UniversityApp.Model.Interfaces;
 using UniversityApp.ViewModel.Commands;
 using UniversityApp.ViewModel.Interfaces;
+using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class GroupDialogViewModel : ViewModelBase
+public class GroupDialogViewModel : ValidationViewModelBase
 {
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly Action _closeAction;
@@ -35,6 +36,7 @@ public class GroupDialogViewModel : ViewModelBase
 		set
 		{
 			_name = value;
+			ValidateName();
 			OnPropertyChanged();
 		}
 	}
@@ -47,6 +49,7 @@ public class GroupDialogViewModel : ViewModelBase
 		set
 		{
 			_course = value;
+			ValidateCourse();
 			OnPropertyChanged();
 		}
 	}
@@ -59,7 +62,8 @@ public class GroupDialogViewModel : ViewModelBase
 		set
 		{
 			_teacher = value;
-			OnPropertyChanged();
+            ValidateTeacher();
+            OnPropertyChanged();
 		}
 	}
 
@@ -115,14 +119,30 @@ public class GroupDialogViewModel : ViewModelBase
 
 		LoadAllDataCommand = AsyncCommand.Create(LoadAllDataAsync);
 
-		OkCommand = new RelayCommand(OkClose);
+		OkCommand = new RelayCommand(OkClose, CanOk);
 		CancelCommand = new RelayCommand(CancelClose);
 		IsSuccess = false;
 		_titleWindow = titleWindow;
 		_name = string.Empty;
-	}
 
-	private void OkClose(object? parameter)
+		ValidateAll();
+	}
+	private void ValidateAll()
+	{
+		ValidateName();
+		ValidateCourse();
+		ValidateTeacher(); 
+    }
+	private void ValidateName() => Validate(_name, new EntityNameValidationRule(1, 50), nameof(Name));
+	private void ValidateTeacher() => Validate<NotNullValidationRule>(_teacher, nameof(Teacher));
+	private void ValidateCourse() => Validate<NotNullValidationRule>(_course, nameof(Course));
+
+    private bool CanOk(object? arg)
+    {
+		return !HasErrors;
+    }
+
+    private void OkClose(object? parameter)
 	{
 		IsSuccess = true;
 		_closeAction?.Invoke();

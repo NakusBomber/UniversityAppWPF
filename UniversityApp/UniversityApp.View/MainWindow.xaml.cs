@@ -23,6 +23,5 @@ namespace UniversityApp.View
         {
             InitializeComponent();
         }
-
     }
 }

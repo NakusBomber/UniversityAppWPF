@@ -1,9 +1,10 @@
 ﻿using System.Windows.Input;
 using UniversityApp.ViewModel.Commands;
+using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class TeacherDialogViewModel : ViewModelBase
+public class TeacherDialogViewModel : ValidationViewModelBase
 {
     private readonly Action _closeAstion;
 
@@ -28,6 +29,7 @@ public class TeacherDialogViewModel : ViewModelBase
         set
         {
             _firstName = value;
+            ValidateFirstName();
             OnPropertyChanged();
         }
     }
@@ -39,6 +41,7 @@ public class TeacherDialogViewModel : ViewModelBase
         set
         {
             _lastName = value;
+            ValidateLastName();
             OnPropertyChanged();
         }
     }
@@ -54,8 +57,23 @@ public class TeacherDialogViewModel : ViewModelBase
         _firstName = string.Empty;
         _lastName = string.Empty;
 
-        OkCommand = new RelayCommand(OkClose);
+        OkCommand = new RelayCommand(OkClose, CanOk);
         CancelCommand = new RelayCommand(CancelClose);
+
+        ValidateAll();
+    }
+
+    private void ValidateAll()
+    {
+        ValidateFirstName();
+        ValidateLastName();
+    }
+    private void ValidateFirstName() => Validate(_firstName, new EntityNameValidationRule(1, 50), nameof(FirstName));
+    private void ValidateLastName() => Validate(_lastName, new EntityNameValidationRule(1, 50), nameof(LastName));
+
+    private bool CanOk(object? arg)
+    {
+        return !HasErrors;
     }
 
     private void CancelClose(object? obj)

@@ -7,11 +7,11 @@ namespace UniversityApp.ViewModel.Stores;
 
 public class NavigationStore : INavigationStore
 {
-    private ShowViewModel _showVM;
-    private CourseViewModel _coursesVM;
-    private GroupViewModel _groupsVM;
-    private StudentViewModel _studentsVM;
-    private TeacherViewModel _teacherVM;
+    private readonly ShowViewModel _showVM;
+    private readonly CourseViewModel _coursesVM;
+    private readonly GroupViewModel _groupsVM;
+    private readonly StudentViewModel _studentsVM;
+    private readonly TeacherViewModel _teacherVM;
 
     public ViewModelBase GetViewModel(EPages page)
     {

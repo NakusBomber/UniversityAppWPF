@@ -12,6 +12,10 @@
         Title="Export students"
         Height="200"
         Width="300">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding ExportCommand}" />
+    </Window.InputBindings>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*" />

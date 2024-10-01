@@ -12,6 +12,11 @@
         WindowStartupLocation="CenterScreen"
         SizeToContent="Height"
         Width="400">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding CloseCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}" />
+    </Window.InputBindings>
+
     <Grid Height="Auto">
         <StackPanel Orientation="Vertical"
                     Height="Auto"
