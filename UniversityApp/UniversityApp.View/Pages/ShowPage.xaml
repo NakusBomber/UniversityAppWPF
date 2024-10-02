@@ -14,6 +14,12 @@
         <KeyBinding Key="R" Modifiers="Control" Command="{Binding TreeViewModel.ReloadCoursesCommand}" />
     </Page.InputBindings>
 
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding TreeViewModel.ReloadCoursesCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
 
         <Grid.RowDefinitions>

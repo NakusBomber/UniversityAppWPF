@@ -10,7 +10,7 @@ namespace UniversityApp.ViewModel.ViewModels.Controls;
 
 public class TreeViewModel : ViewModelBase
 {
-    private IUnitOfWork _unitOfWork;
+    private readonly IUnitOfWork _unitOfWork;
     private IEnumerable<Course>? _courses;
     private ObservableCollection<TreeItem> _fakeChildren
     {

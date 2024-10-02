@@ -9,7 +9,6 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         d:DataContext="{d:DesignInstance Type=vms:ExportDialogViewModel}"
-        ResizeMode="NoResize"
         Title="Export students"
         Height="200"
         Width="300">
