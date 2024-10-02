@@ -16,6 +16,8 @@ namespace UniversityApp.ViewModel.ViewModels.Pages;
 public class GroupViewModel : ViewModelBase
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IImporter<Student> _importer;
+    private readonly IExporter<Student> _exporter;
 	private readonly IWindowService<GroupDialogViewModel, GroupDialogResult> _groupDialogService;
 	private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
     private readonly IWindowService<ExportDialogViewModel> _exportDialogService;
@@ -68,36 +70,22 @@ public class GroupViewModel : ViewModelBase
         IWindowService<MessageBoxViewModel> messageBoxService)
 	{
 		_unitOfWork = unitOfWork;
+        _importer = studentImporter;
+        _exporter = studentExporter;
         _exportDialogService = exportDialogService;
 		_groupDialogService = groupDialogService;
 		_messageBoxService = messageBoxService;
 
         OpenCreateGroupDialogCommand = AsyncCommand.Create(OpenCreateGroupDialogAsync);
-        OpenUpdateGroupDialogCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await OpenUpdateGroupDialogAsync();
-            return null;
-        }, CanUpdateGroup);
-		DeleteGroupCommand = new AsyncCommand<object?>(async _ =>
-		{
-			await DeleteGroupAsync();
-			return null;
-		}, CanDeleteGroup);
+        OpenUpdateGroupDialogCommand = AsyncCommand.Create(OpenUpdateGroupDialogAsync, CanUpdateGroup);
+		DeleteGroupCommand = AsyncCommand.Create(DeleteGroupAsync, CanDeleteGroup);
 		ReloadGroupsCommand = AsyncCommand.Create(ReloadAllGroupsAsync);
 
-        ImportCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await ImportStudentsAsync(studentImporter);
-            return null;
-        }, CanImportExportStudents);
-        ExportCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await ExportStudentsAsync(studentExporter);
-            return null;
-        }, CanImportExportStudents);
+        ImportCommand = AsyncCommand.Create(ImportStudentsAsync, CanImportExportStudents);
+        ExportCommand = AsyncCommand.Create(ExportStudentsAsync, CanImportExportStudents);
 	}
 
-    private async Task ImportStudentsAsync(IImporter<Student> importer, CancellationToken cancellationToken = default)
+    private async Task ImportStudentsAsync(CancellationToken cancellationToken = default)
     {
         if (SelectedGroup == null)
         {
@@ -114,7 +102,7 @@ public class GroupViewModel : ViewModelBase
         }
 
         string path = fileDialog.FileName;
-        IEnumerable<Student> importedData = await importer.ImportAsync(path);
+        IEnumerable<Student> importedData = await _importer.ImportAsync(path);
         
         if(!importedData.Any())
         {
@@ -133,14 +121,14 @@ public class GroupViewModel : ViewModelBase
         await _unitOfWork.SaveAsync();
         await ReloadAllGroupsAsync();
     }
-    private async Task ExportStudentsAsync(IExporter<Student> exporter, CancellationToken cancellationToken = default)
+    private async Task ExportStudentsAsync(CancellationToken cancellationToken = default)
     {
         if(SelectedGroup == null)
         {
             throw new ArgumentNullException(nameof(SelectedGroup));
         }
 
-        var newVM = new ExportDialogViewModel(SelectedGroup, exporter);
+        var newVM = new ExportDialogViewModel(SelectedGroup, _exporter);
         await _exportDialogService.ShowAsync(newVM);
     }
     private bool CanImportExportStudents(object? parameter)

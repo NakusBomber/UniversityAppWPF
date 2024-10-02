@@ -73,15 +73,8 @@ public class CourseDialogViewModel : ValidationViewModelBase
 		ValidateDescription();
     }
 	
-	private void ValidateName()
-	{
-        Validate(_name, new EntityNameValidationRule(1, 75), nameof(Name));
-    }
-	
-	private void ValidateDescription()
-	{
-        Validate(_description, new LengthValidationRule(0, 300), nameof(Description));
-    }
+	private void ValidateName() => Validate(_name, new EntityNameValidationRule(1, 75), nameof(Name));
+	private void ValidateDescription() => Validate(_description, new LengthValidationRule(0, 300), nameof(Description));
    
 	private bool CanOk(object? arg)
     {

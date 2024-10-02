@@ -64,16 +64,8 @@ public class StudentViewModel : ViewModelBase
 
         LoadStudentsCommand = AsyncCommand.Create(ReloadAllStudentsAsync);
         OpenCreateStudentDialogCommand = AsyncCommand.Create(OpenCreateStudentDialogAsync);
-        OpenUpdateStudentDialogCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await OpenUpdateGroupDialogAsync();
-            return null;
-        }, CanUpdateStudent);
-        DeleteStudentCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await DeleteStudentAsync();
-            return null;
-        }, CanDeleteStudent);
+        OpenUpdateStudentDialogCommand = AsyncCommand.Create(OpenUpdateGroupDialogAsync, CanUpdateStudent);
+        DeleteStudentCommand = AsyncCommand.Create(DeleteStudentAsync, CanDeleteStudent);
 	}
 
     private void CloseActiveWindow()

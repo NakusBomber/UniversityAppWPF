@@ -108,9 +108,9 @@ public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
 
 public static class AsyncCommand
 {
-    public static AsyncCommand<object?> Create(Func<Task> command)
+    public static AsyncCommand<object?> Create(Func<Task> command, Func<object?, bool>? canExecute = null)
     {
-        return new AsyncCommand<object?>(async _ => { await command(); return null; });
+        return new AsyncCommand<object?>(async _ => { await command(); return null; }, canExecute);
     }
 
     public static AsyncCommand<TResult> Create<TResult>(Func<Task<TResult>> command)
@@ -118,9 +118,9 @@ public static class AsyncCommand
         return new AsyncCommand<TResult>(_ => command());
     }
 
-    public static AsyncCommand<object?> Create(Func<CancellationToken, Task> command)
+    public static AsyncCommand<object?> Create(Func<CancellationToken, Task> command, Func<object?, bool>? canExecute = null)
     {
-        return new AsyncCommand<object?>(async token => { await command(token); return null; });
+        return new AsyncCommand<object?>(async token => { await command(token); return null; }, canExecute);
     }
 
     public static AsyncCommand<TResult> Create<TResult>(Func<CancellationToken, Task<TResult>> command)

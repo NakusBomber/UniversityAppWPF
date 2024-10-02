@@ -63,17 +63,9 @@ public class TeacherViewModel : ViewModelBase
         _messageBoxService = messageBoxService;
 
         LoadTeachersCommand = AsyncCommand.Create(ReloadAllTeachersAsync);
-        DeleteTeacherCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await DeleteTeacherAsync();
-            return null;
-        }, CanDeleteTeacher);
+        DeleteTeacherCommand = AsyncCommand.Create(DeleteTeacherAsync, CanDeleteTeacher);
         OpenCreateTeacherCommand = AsyncCommand.Create(OpenCreateTeacherDialogAsync);
-        OpenUpdateTeacherCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await OpenUpdateTeacherAsync();
-            return null;
-        }, CanUpdateTeacher);
+        OpenUpdateTeacherCommand = AsyncCommand.Create(OpenUpdateTeacherAsync, CanUpdateTeacher);
     }
 
     private bool CanUpdateTeacher(object? arg)

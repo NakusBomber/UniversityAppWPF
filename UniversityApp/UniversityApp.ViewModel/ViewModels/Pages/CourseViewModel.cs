@@ -65,16 +65,8 @@ public class CourseViewModel : ViewModelBase
         _messageBoxService = messageBoxService;
 
         OpenCreateCourseDialogCommand = AsyncCommand.Create(OpenCreateCourseDialogAsync);
-        OpenUpdateCourseDialogCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await OpenUpdateCourseDialogAsync();
-            return null;
-        }, CanOpenUpdateCourseDialog);
-        DeleteCourseCommand = new AsyncCommand<object?>(async _ =>
-        {
-            await DeleteCourseAsync();
-            return null;
-        }, CanDeleteCourse);
+        OpenUpdateCourseDialogCommand = AsyncCommand.Create(OpenUpdateCourseDialogAsync, CanOpenUpdateCourseDialog);
+        DeleteCourseCommand = AsyncCommand.Create(DeleteCourseAsync, CanDeleteCourse);
         ReloadCoursesCommand = AsyncCommand.Create(ReloadAllCoursesAsync);
     }
 
