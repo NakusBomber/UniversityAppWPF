@@ -6,7 +6,7 @@ using UniversityApp.ViewModel.Helpers;
 namespace UniversityApp.ViewModel.Commands;
 
 // Reference: https://learn.microsoft.com/ru-ru/archive/msdn-magazine/2014/april/async-programming-patterns-for-asynchronous-mvvm-applications-commands
-public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
+public class AsyncCommand<TResult> : AsyncCommandBase
 {
     private readonly Func<CancellationToken, Task<TResult>> _command;
     private readonly Func<object?, bool>? _canExecute;
@@ -50,58 +50,6 @@ public class AsyncCommand<TResult> : AsyncCommandBase, INotifyPropertyChanged
         {
             _execution = value;
             OnPropertyChanged();
-        }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-    {
-        PropertyChangedEventHandler? handler = PropertyChanged;
-        if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    private sealed class CancelAsyncCommand : ICommand
-    {
-        private CancellationTokenSource _cts = new CancellationTokenSource();
-        private bool _commandExecuting;
-
-        public CancellationToken Token { get { return _cts.Token; } }
-
-        public void NotifyCommandStarting()
-        {
-            _commandExecuting = true;
-            if (!_cts.IsCancellationRequested)
-                return;
-            _cts = new CancellationTokenSource();
-            RaiseCanExecuteChanged();
-        }
-
-        public void NotifyCommandFinished()
-        {
-            _commandExecuting = false;
-            RaiseCanExecuteChanged();
-        }
-
-        bool ICommand.CanExecute(object? parameter)
-        {
-            return _commandExecuting && !_cts.IsCancellationRequested;
-        }
-
-        void ICommand.Execute(object? parameter)
-        {
-            _cts.Cancel();
-            RaiseCanExecuteChanged();
-        }
-
-        public event EventHandler? CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value; }
-        }
-
-        private void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

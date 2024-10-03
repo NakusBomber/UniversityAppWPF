@@ -25,8 +25,7 @@ public class StudentExporter : IExporter<Student>
                 throw new ArgumentException("Path is null or empty");
             }
 
-            if (!Path.HasExtension(value))
-                
+            if (!Path.HasExtension(value)) 
             {
                 throw new ArgumentException("Path hasn't extension");
             }
@@ -77,21 +76,6 @@ public class StudentExporter : IExporter<Student>
 
             OpenExportedDirectoryFile();
         });
-    }
-
-    public void SetPath(string path)
-    {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new ArgumentException("Path is null or empty");
-        }
-
-        if (!Path.HasExtension(path))
-        {
-            throw new ArgumentException("Path hasn't extension");
-        }
-
-        _filePath = path;
     }
 
     private async Task CSVExportAsync(IEnumerable<Student> students, string filePath)

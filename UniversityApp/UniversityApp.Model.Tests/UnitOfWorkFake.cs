@@ -4,7 +4,7 @@ using UniversityApp.Model.Interfaces;
 
 namespace UniversityApp.Model.Tests;
 
-public class UnitOfWorkMock : IUnitOfWork
+public class UnitOfWorkFake : IUnitOfWork
 {
     private IRepository<Course> _courseRepository;
     private IRepository<Group> _groupRepository;
@@ -18,11 +18,11 @@ public class UnitOfWorkMock : IUnitOfWork
 
     public IRepository<Teacher> TeacherRepository => _teacherRepository;
 
-    public UnitOfWorkMock(
-        FakeRepository<Course> courseRepository,
-        FakeRepository<Group> groupRepository,
-        FakeRepository<Student> studentRepository,
-        FakeRepository<Teacher> teacherRepository)
+    public UnitOfWorkFake(
+        RepositoryFake<Course> courseRepository,
+        RepositoryFake<Group> groupRepository,
+        RepositoryFake<Student> studentRepository,
+        RepositoryFake<Teacher> teacherRepository)
     {
         _courseRepository = courseRepository;
         _groupRepository = groupRepository;
@@ -30,11 +30,11 @@ public class UnitOfWorkMock : IUnitOfWork
         _teacherRepository = teacherRepository;
     }
 
-    public UnitOfWorkMock() 
-        : this (new FakeRepository<Course>(),
-              new FakeRepository<Group>(),
-              new FakeRepository<Student>(),
-              new FakeRepository<Teacher>())
+    public UnitOfWorkFake() 
+        : this (new RepositoryFake<Course>(),
+              new RepositoryFake<Group>(),
+              new RepositoryFake<Student>(),
+              new RepositoryFake<Teacher>())
     {
     }
     public void Dispose()

@@ -4,7 +4,7 @@ using UniversityApp.ViewModel.ViewModels;
 
 namespace UniversityApp.ViewModel.Commands;
 
-public abstract class AsyncCommandBase : IAsyncCommand
+public abstract class AsyncCommandBase :  ViewModelBase, IAsyncCommand
 {
     public abstract bool CanExecute(object? parameter);
     public abstract Task ExecuteAsync(object? parameter);

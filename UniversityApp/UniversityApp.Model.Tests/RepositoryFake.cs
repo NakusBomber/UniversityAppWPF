@@ -4,9 +4,10 @@ using UniversityApp.Model.Interfaces;
 
 namespace UniversityApp.Model.Tests;
 
-public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Entity
+public class RepositoryFake<TEntity> : IRepository<TEntity> where TEntity : Entity
 {
-    private HashSet<TEntity> _set;
+    private readonly HashSet<TEntity> _set;
+
     public void Create(TEntity entity)
     {
         _set.Add(entity);
@@ -32,7 +33,7 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
         bool asNoTracking = false)
     {
-        IQueryable<TEntity> hashSet = (IQueryable<TEntity>)_set;
+        IQueryable<TEntity> hashSet = _set.AsQueryable();
 
         if (filter != null)
         {
@@ -52,7 +53,7 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         Func<IQueryable<TEntity>, IOrderedEnumerable<TEntity>>? orderBy = null,
         bool asNoTracking = false)
     {
-        return await Task.Run(() => GetAsync(filter, orderBy, asNoTracking));
+        return await Task.Run(() => Get(filter, orderBy, asNoTracking));
     }
 
     public void Update(TEntity entity)
@@ -87,11 +88,11 @@ public class FakeRepository<TEntity> : IRepository<TEntity> where TEntity : Enti
         return await Task.Run(() => GetById(id));
     }
 
-    public FakeRepository() : this(new HashSet<TEntity>())
+    public RepositoryFake() : this(new HashSet<TEntity>())
     {
     }
 
-    public FakeRepository(HashSet<TEntity> entities)
+    public RepositoryFake(HashSet<TEntity> entities)
     {
         _set = entities;
     }

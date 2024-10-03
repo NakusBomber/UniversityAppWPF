@@ -14,6 +14,11 @@ public class LengthValidationRule : ValidationRule
     }
     public override ValidationResult Validate(object value, CultureInfo cultureInfo)
     {
+        if(value == null)
+        {
+            return new ValidationResult(false, "Value mustn't be a null");
+        }
+
         var parseValue = (string)value;
 
         if (parseValue.Length < Min)
