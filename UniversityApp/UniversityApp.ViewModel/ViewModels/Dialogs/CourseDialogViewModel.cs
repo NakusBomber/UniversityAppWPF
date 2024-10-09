@@ -7,22 +7,9 @@ using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class CourseDialogViewModel : ValidationViewModelBase
+public class CourseDialogViewModel : BasicDialogViewModel
 {
 	private readonly Action closeAction;
-
-	private string _titleWindow;
-
-	public string TitleWindow
-	{
-		get => _titleWindow;
-		set
-		{
-			_titleWindow = value;
-			OnPropertyChanged();
-		}
-	}
-
 
 	private string _name;
 
@@ -54,8 +41,8 @@ public class CourseDialogViewModel : ValidationViewModelBase
 	public ICommand CancelCommand { get; }
 
 	public CourseDialogViewModel(string title, Action closeAction)
+		: base(title)
 	{
-		_titleWindow = title;
 		this.closeAction = closeAction;
 		_name = string.Empty;
 		_description = string.Empty;

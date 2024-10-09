@@ -4,23 +4,11 @@ using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class TeacherDialogViewModel : ValidationViewModelBase
+public class TeacherDialogViewModel : BasicDialogViewModel
 {
     private readonly Action _closeAstion;
 
     public bool IsSuccess { get; set; }
-
-    private string _titleWindow;
-
-    public string TitleWindow
-    {
-        get => _titleWindow;
-        set
-        {
-            _titleWindow = value;
-            OnPropertyChanged();
-        }
-    }
 
     private string _firstName;
     public string FirstName
@@ -50,8 +38,8 @@ public class TeacherDialogViewModel : ValidationViewModelBase
     public ICommand CancelCommand { get; }
 
     public TeacherDialogViewModel(string titleWindow, Action closeAction)
+        : base(titleWindow)
     {
-        _titleWindow = titleWindow;
         _closeAstion = closeAction;
 
         _firstName = string.Empty;

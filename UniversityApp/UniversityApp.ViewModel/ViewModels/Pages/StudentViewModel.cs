@@ -47,10 +47,10 @@ public class StudentViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand LoadStudentsCommand { get; }
-    public IAsyncCommand OpenCreateStudentDialogCommand { get; }
-    public IAsyncCommand OpenUpdateStudentDialogCommand { get; }
-    public IAsyncCommand DeleteStudentCommand { get; }
+    public IAsyncCommand<object?> LoadStudentsCommand { get; }
+    public IAsyncCommand<object?> OpenCreateStudentDialogCommand { get; }
+    public IAsyncCommand<object?> OpenUpdateStudentDialogCommand { get; }
+    public IAsyncCommand<object?> DeleteStudentCommand { get; }
 
     [Inject]
     public StudentViewModel(
@@ -64,7 +64,7 @@ public class StudentViewModel : ViewModelBase
 
         LoadStudentsCommand = AsyncCommand.Create(ReloadAllStudentsAsync);
         OpenCreateStudentDialogCommand = AsyncCommand.Create(OpenCreateStudentDialogAsync);
-        OpenUpdateStudentDialogCommand = AsyncCommand.Create(OpenUpdateGroupDialogAsync, CanUpdateStudent);
+        OpenUpdateStudentDialogCommand = AsyncCommand.Create(OpenUpdateStudentDialogAsync, CanUpdateStudent);
         DeleteStudentCommand = AsyncCommand.Create(DeleteStudentAsync, CanDeleteStudent);
 	}
 
@@ -107,7 +107,7 @@ public class StudentViewModel : ViewModelBase
         }
     }
 
-    private async Task OpenUpdateGroupDialogAsync(CancellationToken cancellationToken = default)
+    private async Task OpenUpdateStudentDialogAsync(CancellationToken cancellationToken = default)
     {
         if (SelectedStudent == null)
         {

@@ -47,10 +47,10 @@ public class TeacherViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand LoadTeachersCommand { get; }
-    public IAsyncCommand OpenCreateTeacherCommand { get; }
-    public IAsyncCommand OpenUpdateTeacherCommand { get; }
-    public IAsyncCommand DeleteTeacherCommand { get; }
+    public IAsyncCommand<object?> LoadTeachersCommand { get; }
+    public IAsyncCommand<object?> OpenCreateTeacherCommand { get; }
+    public IAsyncCommand<object?> OpenUpdateTeacherCommand { get; }
+    public IAsyncCommand<object?> DeleteTeacherCommand { get; }
 
     [Inject]
     public TeacherViewModel(
@@ -77,7 +77,7 @@ public class TeacherViewModel : ViewModelBase
     {
         if(SelectedTeacher == null)
         {
-            throw new ArgumentException(nameof(SelectedTeacher));
+            throw new ArgumentNullException(nameof(SelectedTeacher));
         }
 
         var newVM = new TeacherDialogViewModel("Change teacher", CloseActiveWindow)
@@ -139,7 +139,7 @@ public class TeacherViewModel : ViewModelBase
     {
         if(SelectedTeacher == null)
         {
-            throw new ArgumentException(nameof(SelectedTeacher));
+            throw new ArgumentNullException(nameof(SelectedTeacher));
         }
 
         var teacher = await _unitOfWork.TeacherRepository.GetByIdAsync(SelectedTeacher.Id);

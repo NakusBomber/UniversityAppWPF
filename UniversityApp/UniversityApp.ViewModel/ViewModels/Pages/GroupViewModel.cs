@@ -20,6 +20,7 @@ public class GroupViewModel : ViewModelBase
     private readonly IExporter<Student> _exporter;
 	private readonly IWindowService<GroupDialogViewModel, GroupDialogResult> _groupDialogService;
 	private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
+    private readonly IWindowService<BasicDialogViewModel, OpenFileDialogResult> _openFileDialogService;
     private readonly IWindowService<ExportDialogViewModel> _exportDialogService;
 
 	private ObservableCollection<Group>? _groups;
@@ -53,12 +54,12 @@ public class GroupViewModel : ViewModelBase
 		}
 	}
 
-	public IAsyncCommand OpenCreateGroupDialogCommand { get; }
-	public IAsyncCommand OpenUpdateGroupDialogCommand { get; }
-	public IAsyncCommand DeleteGroupCommand { get; }
-	public IAsyncCommand ReloadGroupsCommand { get; }
-    public IAsyncCommand ImportCommand { get; }
-    public IAsyncCommand ExportCommand { get; }
+	public IAsyncCommand<object?> OpenCreateGroupDialogCommand { get; }
+	public IAsyncCommand<object?> OpenUpdateGroupDialogCommand { get; }
+	public IAsyncCommand<object?> DeleteGroupCommand { get; }
+	public IAsyncCommand<object?> ReloadGroupsCommand { get; }
+    public IAsyncCommand<object?> ImportCommand { get; }
+    public IAsyncCommand<object?> ExportCommand { get; }
 
 	[Inject]
 	public GroupViewModel(
@@ -66,12 +67,14 @@ public class GroupViewModel : ViewModelBase
         IImporter<Student> studentImporter,
         IExporter<Student> studentExporter,
 		IWindowService<GroupDialogViewModel, GroupDialogResult> groupDialogService,
+        IWindowService<BasicDialogViewModel, OpenFileDialogResult> openFileDialogService,
         IWindowService<ExportDialogViewModel> exportDialogService,
         IWindowService<MessageBoxViewModel> messageBoxService)
 	{
 		_unitOfWork = unitOfWork;
         _importer = studentImporter;
         _exporter = studentExporter;
+        _openFileDialogService = openFileDialogService;
         _exportDialogService = exportDialogService;
 		_groupDialogService = groupDialogService;
 		_messageBoxService = messageBoxService;
@@ -91,24 +94,20 @@ public class GroupViewModel : ViewModelBase
         {
             throw new ArgumentNullException(nameof(SelectedGroup));
         }
-        OpenFileDialog fileDialog = new OpenFileDialog();
-        fileDialog.Filter = EExportTypes.CSV.GetFilter();
-        fileDialog.CheckPathExists = true;
-        fileDialog.CheckFileExists = true;
-
-        if (fileDialog.ShowDialog() != true)
+        var result = _openFileDialogService.Show(new BasicDialogViewModel(string.Empty));
+        
+        if(!result.IsSuccess || string.IsNullOrEmpty(result.FilePath))
         {
             return;
         }
 
-        string path = fileDialog.FileName;
+        string path = result.FilePath;
         IEnumerable<Student> importedData = await _importer.ImportAsync(path);
         
         if(!importedData.Any())
         {
             return;
         }
-
 
         var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
         await RemoveStudentsFromGroupAsync(group);

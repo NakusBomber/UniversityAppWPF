@@ -8,25 +8,12 @@ using UniversityApp.ViewModel.Validations;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class GroupDialogViewModel : ValidationViewModelBase
+public class GroupDialogViewModel : BasicDialogViewModel
 {
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly Action _closeAction;
 
 	public bool IsSuccess {  get; set; }
-
-	private string _titleWindow;
-
-	public string TitleWindow
-	{
-		get => _titleWindow;
-		set
-		{
-			_titleWindow = value;
-			OnPropertyChanged();
-		}
-	}
-
 
 	private string _name;
 
@@ -105,7 +92,7 @@ public class GroupDialogViewModel : ValidationViewModelBase
         }
     }
 
-	public IAsyncCommand LoadAllDataCommand { get; }
+	public IAsyncCommand<object?> LoadAllDataCommand { get; }
     public ICommand OkCommand { get; }
 	public ICommand CancelCommand { get; }
 
@@ -113,6 +100,7 @@ public class GroupDialogViewModel : ValidationViewModelBase
 		string titleWindow,
 		Action closeAction,
 		IUnitOfWork unitOfWork)
+		: base(titleWindow)
 	{
 		_unitOfWork = unitOfWork;
 		_closeAction = closeAction;
@@ -122,7 +110,6 @@ public class GroupDialogViewModel : ValidationViewModelBase
 		OkCommand = new RelayCommand(OkClose, CanOk);
 		CancelCommand = new RelayCommand(CancelClose);
 		IsSuccess = false;
-		_titleWindow = titleWindow;
 		_name = string.Empty;
 
 		ValidateAll();

@@ -37,13 +37,19 @@ public class Student : Entity
     }
 
     public Student(string firstName, string lastName, Group? group = null)
+        : this(Guid.NewGuid(), firstName, lastName, group)
     {
-        Id = Guid.NewGuid();
+    }
+
+    public Student(Guid id, string firstName, string lastName, Group? group = null)
+    {
+        Id = id;
         FirstName = firstName;
         LastName = lastName;
         Group = group;
         GroupId = group == null ? null : group.Id;
     }
+
     public override int GetHashCode()
     {
         return (Id, FirstName, LastName, GroupId).GetHashCode();

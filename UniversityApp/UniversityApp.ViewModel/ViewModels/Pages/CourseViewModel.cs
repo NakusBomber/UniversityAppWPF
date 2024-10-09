@@ -49,10 +49,10 @@ public class CourseViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand OpenCreateCourseDialogCommand {  get; set; }
-    public IAsyncCommand OpenUpdateCourseDialogCommand {  get; set; }
-    public IAsyncCommand DeleteCourseCommand { get; set; }
-    public IAsyncCommand ReloadCoursesCommand {  get; set; }
+    public IAsyncCommand<object?> OpenCreateCourseDialogCommand {  get; set; }
+    public IAsyncCommand<object?> OpenUpdateCourseDialogCommand {  get; set; }
+    public IAsyncCommand<object?> DeleteCourseCommand { get; set; }
+    public IAsyncCommand<object?> ReloadCoursesCommand {  get; set; }
 
     [Inject]
     public CourseViewModel(

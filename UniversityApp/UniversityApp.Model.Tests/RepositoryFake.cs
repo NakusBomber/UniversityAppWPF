@@ -58,8 +58,10 @@ public class RepositoryFake<TEntity> : IRepository<TEntity> where TEntity : Enti
 
     public void Update(TEntity entity)
     {
-        if (_set.Remove(entity))
+        var entityRemove = _set.FirstOrDefault(e => e.Id == entity.Id);
+        if (entityRemove != null)
         {
+            _set.Remove(entityRemove);
             _set.Add(entity);
         }
         else

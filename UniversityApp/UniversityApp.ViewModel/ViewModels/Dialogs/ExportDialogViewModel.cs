@@ -9,7 +9,7 @@ using UniversityApp.ViewModel.Interfaces;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class ExportDialogViewModel : ViewModelBase
+public class ExportDialogViewModel : BasicDialogViewModel
 {
 	private readonly Group _group;
 	private readonly IExporter<Student> _exporter;
@@ -53,10 +53,11 @@ public class ExportDialogViewModel : ViewModelBase
 
 
 	public IEnumerable<EExportTypes> ExportTypes => EExportTypesExtension.AllTypes;
-	public IAsyncCommand ExportCommand { get; }
+	public IAsyncCommand<object?> ExportCommand { get; }
 
 
-	public ExportDialogViewModel(Group group, IExporter<Student> exporter)
+	public ExportDialogViewModel(Group group, IExporter<Student> exporter, string? title = null)
+		: base(title ?? string.Empty)
 	{
 		_group = group;
 		_exporter = exporter;

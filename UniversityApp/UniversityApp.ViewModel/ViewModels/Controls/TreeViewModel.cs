@@ -38,7 +38,7 @@ public class TreeViewModel : ViewModelBase
         }
     }
 
-    public IAsyncCommand ReloadCoursesCommand { get; }
+    public IAsyncCommand<object?> ReloadCoursesCommand { get; }
 
     public TreeViewModel(IUnitOfWork unitOfWork)
     {

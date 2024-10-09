@@ -41,6 +41,7 @@ public class NavigationTests
         var mockCourse = new Mock<IWindowService<CourseDialogViewModel, CourseDialogResult>>();
         var mockMessageBox = new Mock<IWindowService<MessageBoxViewModel>>();
         var mockGroup = new Mock<IWindowService<GroupDialogViewModel, GroupDialogResult>>();
+        var mockOpenFile = new Mock<IWindowService<BasicDialogViewModel, OpenFileDialogResult>>();
         var mockExport = new Mock<IWindowService<ExportDialogViewModel>>();
         var mockStudent = new Mock<IWindowService<StudentDialogViewModel, StudentDialogResult>>();
         var mockTeacher = new Mock<IWindowService<TeacherDialogViewModel , TeacherDialogResult>>();
@@ -52,6 +53,7 @@ public class NavigationTests
             new StudentImporter(),
             new StudentExporterFake(),
             mockGroup.Object,
+            mockOpenFile.Object,
             mockExport.Object,
             mockMessageBox.Object);
         _studentVM = new StudentViewModel(_unitOfWork, mockMessageBox.Object, mockStudent.Object);

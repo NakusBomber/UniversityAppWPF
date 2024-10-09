@@ -32,8 +32,13 @@ public class Teacher : Entity
     }
 
     public Teacher(string firstName, string lastName)
+        : this(Guid.NewGuid(), firstName, lastName)
     {
-        Id = Guid.NewGuid();
+    }
+
+    public Teacher(Guid id, string firstName, string lastName)
+    {
+        Id = id;
         FirstName = firstName;
         LastName = lastName;
     }

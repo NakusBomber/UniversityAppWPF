@@ -37,7 +37,7 @@ public class LineIteratorStub : ILineIterator
 
         var line = _lines.ElementAtOrDefault(_lineNumber);
         _lineNumber++;
-        return line;
+        return line?.Trim();
     }
 
     public async Task<string?> GetNextLineAsync()

@@ -3,7 +3,7 @@ using UniversityApp.ViewModel.Commands;
 
 namespace UniversityApp.ViewModel.ViewModels.Dialogs;
 
-public class MessageBoxViewModel : ViewModelBase
+public class MessageBoxViewModel : BasicDialogViewModel
 {
 	private readonly Action _closeAction;
 
@@ -18,23 +18,11 @@ public class MessageBoxViewModel : ViewModelBase
 		}
 	}
 
-	private string _title;
-
-	public string Title
-	{
-		get => _title;
-		set
-		{
-			_title = value;
-			OnPropertyChanged();
-		}
-	}
-
 	public ICommand CloseCommand { get; }
 
 	public MessageBoxViewModel(string title, string message, Action closeAction)
+		: base(title)
 	{
-		_title = title;
 		_message = message;
 		_closeAction = closeAction;
 
