@@ -11,6 +11,7 @@ public interface ICRUD<T>
         bool asNoTracking = false);
     public T GetById(Guid id);
     public void Create(T entity);
+    public void UpdateRange(IEnumerable<T> entities);
     public void Update(T entity);
     public void Delete(T entity);
 }

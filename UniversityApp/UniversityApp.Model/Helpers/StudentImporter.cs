@@ -1,9 +1,10 @@
 ﻿using UniversityApp.Model.Entities;
 using UniversityApp.Model.Interfaces;
+using UniversityApp.ViewModel.Models;
 
 namespace UniversityApp.Model.Helpers;
 
-public class StudentImporter : IImporter<Student>
+public class StudentImporter : IImporter<StudentImportResult>
 {
     private const char _csvSeparator = ',';
     private readonly ILineIterator _lineIterator;
@@ -18,14 +19,15 @@ public class StudentImporter : IImporter<Student>
     {
     }
 
-    public IEnumerable<Student> Import(string path)
+    public StudentImportResult Import(string path)
     {
         return ImportAsync(path).Result;
     }
 
-    public async Task<IEnumerable<Student>> ImportAsync(string path)
+    public async Task<StudentImportResult> ImportAsync(string path)
     {
         var data = new List<Student>();
+        int countError = 0;
         _lineIterator.FilePath = path;
         
         string? line = await _lineIterator.GetNextLineAsync();
@@ -43,12 +45,12 @@ public class StudentImporter : IImporter<Student>
             }
             catch (Exception)
             {
-                // Skip student with error
+                countError++;
             }
             line = await _lineIterator.GetNextLineAsync();
         }
 
-        return data;
+        return new StudentImportResult(data, countError);
     }
 
     private bool IsHeadline(string line)

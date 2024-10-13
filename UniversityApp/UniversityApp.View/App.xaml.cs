@@ -69,7 +69,7 @@ namespace UniversityApp.View
         {
             _kernel.Bind<ILineIterator>().To<LineIterator>();
 
-            _kernel.Bind<IImporter<Student>>().To<StudentImporter>();
+            _kernel.Bind<IImporter<StudentImportResult>>().To<StudentImporter>();
             _kernel.Bind<IExporter<Student>>().To<StudentExporter>();
         }
     }

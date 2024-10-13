@@ -17,17 +17,10 @@ public class StudentViewModel : ViewModelBase
     private readonly IWindowService<MessageBoxViewModel> _messageWindowService;
     private readonly IWindowService<StudentDialogViewModel, StudentDialogResult> _studentDialogService;
 
-    private ObservableCollection<Student>? _students;
+    private ObservableCollection<Student> _students = new();
     public ObservableCollection<Student> Students
     {
-        get
-        {
-            if (_students == null)
-            {
-                _students = new ObservableCollection<Student>();
-            }
-            return _students;
-        }
+        get => _students;
         set
         {
             _students = value;
@@ -64,8 +57,8 @@ public class StudentViewModel : ViewModelBase
 
         LoadStudentsCommand = AsyncCommand.Create(ReloadAllStudentsAsync);
         OpenCreateStudentDialogCommand = AsyncCommand.Create(OpenCreateStudentDialogAsync);
-        OpenUpdateStudentDialogCommand = AsyncCommand.Create(OpenUpdateStudentDialogAsync, CanUpdateStudent);
-        DeleteStudentCommand = AsyncCommand.Create(DeleteStudentAsync, CanDeleteStudent);
+        OpenUpdateStudentDialogCommand = AsyncCommand.Create(OpenUpdateStudentDialogAsync, IsStudentSelected);
+        DeleteStudentCommand = AsyncCommand.Create(DeleteStudentAsync, IsStudentSelected);
 	}
 
     private void CloseActiveWindow()
@@ -92,18 +85,12 @@ public class StudentViewModel : ViewModelBase
 
         if (result.IsSuccess && result.Student != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                 await _unitOfWork.StudentRepository.CreateAsync(result.Student);
-                await _unitOfWork.SaveAsync();
-
-                await ReloadAllStudentsAsync();
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+                await SaveAndReloadAsync();
+            });
         }
     }
 
@@ -124,12 +111,12 @@ public class StudentViewModel : ViewModelBase
         StudentDialogResult result = _studentDialogService.Show(newVM);
         if (result.IsSuccess && result.Student != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 var student = await _unitOfWork.StudentRepository.GetByIdAsync(SelectedStudent.Id);
                 student.FirstName = result.Student.FirstName;
                 student.LastName = result.Student.LastName;
-                if(result.Student.Group != null)
+                if (result.Student.Group != null)
                 {
                     student.Group = await _unitOfWork.GroupRepository.GetByIdAsync(result.Student.Group.Id);
                 }
@@ -142,22 +129,11 @@ public class StudentViewModel : ViewModelBase
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.StudentRepository.UpdateAsync(student);
-                    await _unitOfWork.SaveAsync();
-                    
+                    await SaveAndReloadAsync();
                     SelectedStudent = null;
-                    await ReloadAllStudentsAsync();
                 }
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+            });
         }
-    }
-
-    private bool CanUpdateStudent(object? parameter)
-    {
-        return SelectedStudent != null;
     }
 
     private async Task DeleteStudentAsync(CancellationToken cancellationToken = default)
@@ -169,15 +145,8 @@ public class StudentViewModel : ViewModelBase
 
         var student = await _unitOfWork.StudentRepository.GetByIdAsync(SelectedStudent.Id);
         await _unitOfWork.StudentRepository.DeleteAsync(student);
-        await _unitOfWork.SaveAsync();
-
+        await SaveAndReloadAsync();
         SelectedStudent = null;
-        await ReloadAllStudentsAsync();
-    }
-
-    private bool CanDeleteStudent(object? parameter)
-    {
-        return SelectedStudent != null;
     }
 
     private async Task ReloadAllStudentsAsync(CancellationToken cancellationToken = default)
@@ -186,4 +155,22 @@ public class StudentViewModel : ViewModelBase
         var list = await _unitOfWork.StudentRepository.GetAsync(asNoTracking: true);
         Students = new ObservableCollection<Student>(list);
     }
+    private async Task HandleDbExceptions(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
+        }
+    }
+    private async Task SaveAndReloadAsync(CancellationToken cancellationToken = default)
+    {
+        await _unitOfWork.SaveAsync();
+        await ReloadAllStudentsAsync();
+    }
+
+    private bool IsStudentSelected(object? parameter) => SelectedStudent != null;
 }

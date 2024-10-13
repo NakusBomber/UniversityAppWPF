@@ -2,8 +2,8 @@
 
 namespace UniversityApp.Model.Interfaces;
 
-public interface IImporter<TEntity> where TEntity : Entity
+public interface IImporter<TResult> where TResult : class
 {
-    public IEnumerable<TEntity> Import(string path);
-    public Task<IEnumerable<TEntity>> ImportAsync(string path);
+    public TResult Import(string path);
+    public Task<TResult> ImportAsync(string path);
 }

@@ -16,25 +16,18 @@ namespace UniversityApp.ViewModel.ViewModels.Pages;
 public class GroupViewModel : ViewModelBase
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IImporter<Student> _importer;
+    private readonly IImporter<StudentImportResult> _importer;
     private readonly IExporter<Student> _exporter;
 	private readonly IWindowService<GroupDialogViewModel, GroupDialogResult> _groupDialogService;
 	private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
     private readonly IWindowService<BasicDialogViewModel, OpenFileDialogResult> _openFileDialogService;
     private readonly IWindowService<ExportDialogViewModel> _exportDialogService;
 
-	private ObservableCollection<Group>? _groups;
+	private ObservableCollection<Group> _groups = new();
 
 	public ObservableCollection<Group> Groups
 	{
-		get
-		{
-			if (_groups == null)
-			{
-				_groups = new ObservableCollection<Group>();
-			}
-			return _groups;
-		}
+		get => _groups;
 		set
 		{
 			_groups = value;
@@ -64,7 +57,7 @@ public class GroupViewModel : ViewModelBase
 	[Inject]
 	public GroupViewModel(
 		IUnitOfWork unitOfWork,
-        IImporter<Student> studentImporter,
+        IImporter<StudentImportResult> studentImporter,
         IExporter<Student> studentExporter,
 		IWindowService<GroupDialogViewModel, GroupDialogResult> groupDialogService,
         IWindowService<BasicDialogViewModel, OpenFileDialogResult> openFileDialogService,
@@ -80,12 +73,12 @@ public class GroupViewModel : ViewModelBase
 		_messageBoxService = messageBoxService;
 
         OpenCreateGroupDialogCommand = AsyncCommand.Create(OpenCreateGroupDialogAsync);
-        OpenUpdateGroupDialogCommand = AsyncCommand.Create(OpenUpdateGroupDialogAsync, CanUpdateGroup);
-		DeleteGroupCommand = AsyncCommand.Create(DeleteGroupAsync, CanDeleteGroup);
+        OpenUpdateGroupDialogCommand = AsyncCommand.Create(OpenUpdateGroupDialogAsync, IsGroupSelected);
+		DeleteGroupCommand = AsyncCommand.Create(DeleteGroupAsync, IsGroupSelected);
 		ReloadGroupsCommand = AsyncCommand.Create(ReloadAllGroupsAsync);
 
-        ImportCommand = AsyncCommand.Create(ImportStudentsAsync, CanImportExportStudents);
-        ExportCommand = AsyncCommand.Create(ExportStudentsAsync, CanImportExportStudents);
+        ImportCommand = AsyncCommand.Create(ImportStudentsAsync, IsGroupSelected);
+        ExportCommand = AsyncCommand.Create(ExportStudentsAsync, IsGroupSelected);
 	}
 
     private async Task ImportStudentsAsync(CancellationToken cancellationToken = default)
@@ -102,23 +95,26 @@ public class GroupViewModel : ViewModelBase
         }
 
         string path = result.FilePath;
-        IEnumerable<Student> importedData = await _importer.ImportAsync(path);
+        var importResult = await _importer.ImportAsync(path);
         
-        if(!importedData.Any())
+        if(!importResult.StudentsWithoutGroup.Any())
         {
+            await OpenMessageBoxAsync("Info", "Not one student was imported");
             return;
         }
 
         var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
         await RemoveStudentsFromGroupAsync(group);
         
-        foreach (Student student in importedData)
+        foreach (Student student in importResult.StudentsWithoutGroup)
         {
             student.Group = group;
             await _unitOfWork.StudentRepository.CreateAsync(student);
         }
-        await _unitOfWork.SaveAsync();
-        await ReloadAllGroupsAsync();
+        await SaveAndReloadAsync();
+
+        var countStudents = importResult.StudentsWithoutGroup.Count();
+        await OpenMessageBoxAsync("Info", $"Count imported students: {countStudents}\nCount line with error: {importResult.CountError}");
     }
     private async Task ExportStudentsAsync(CancellationToken cancellationToken = default)
     {
@@ -130,10 +126,6 @@ public class GroupViewModel : ViewModelBase
         var newVM = new ExportDialogViewModel(SelectedGroup, _exporter);
         await _exportDialogService.ShowAsync(newVM);
     }
-    private bool CanImportExportStudents(object? parameter)
-    {
-        return SelectedGroup != null;
-    }
 
     private async Task OpenCreateGroupDialogAsync(CancellationToken cancellationToken = default)
     {
@@ -143,21 +135,12 @@ public class GroupViewModel : ViewModelBase
         
         if (result.IsSuccess && result.Group != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                 await _unitOfWork.GroupRepository.CreateAsync(result.Group);
-                await _unitOfWork.SaveAsync();
-                await ReloadAllGroupsAsync();
-            }
-            catch (DbUpdateException)
-            {
-                await OpenErrorMessageBoxAsync("Already is a group by that name");
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+                await SaveAndReloadAsync();
+            }, "Already is a group by that name");
         }
     }
 
@@ -178,7 +161,7 @@ public class GroupViewModel : ViewModelBase
         GroupDialogResult result = _groupDialogService.Show(newVM);
         if (result.IsSuccess && result.Group != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
                 group.Name = result.Group.Name;
@@ -189,41 +172,28 @@ public class GroupViewModel : ViewModelBase
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.GroupRepository.UpdateAsync(group);
-                    await _unitOfWork.SaveAsync();
+                    await SaveAndReloadAsync();
                     SelectedGroup = null;
-                    await ReloadAllGroupsAsync();
                 }
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
-            catch (DbUpdateException)
-            {
-                await OpenErrorMessageBoxAsync("Already is a group by that name");
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+            }, "Already is a group by that name");
         }
     }
 
-    private bool CanUpdateGroup(object? parameter)
-    {
-        return SelectedGroup != null;
-    }
     private async Task OpenErrorMessageBoxAsync(string message, CancellationToken cancellationToken = default)
     {
+        await OpenMessageBoxAsync("Error", message, cancellationToken);
+    }
+
+    private async Task OpenMessageBoxAsync(string title, string message, CancellationToken cancellationToken = default)
+    {
         var messageViewModel = new MessageBoxViewModel(
-            "Error",
+            title,
             message,
             CloseActiveWindow
         );
 
         await _messageBoxService.ShowAsync(messageViewModel);
     }
-
     private void CloseActiveWindow()
     {
         Application.Current.Windows.OfType<Window>().First(w => w.IsActive == true)?.Close();
@@ -239,16 +209,10 @@ public class GroupViewModel : ViewModelBase
         var group = await _unitOfWork.GroupRepository.GetByIdAsync(SelectedGroup.Id);
         await RemoveStudentsFromGroupAsync(group);
 		await _unitOfWork.GroupRepository.DeleteAsync(group);
-		await _unitOfWork.SaveAsync();
-
+        await SaveAndReloadAsync();
 		SelectedGroup = null;
-		await ReloadAllGroupsAsync();
 	}
 
-	private bool CanDeleteGroup(object? parameter)
-	{
-		return SelectedGroup != null;
-	}
 	private async Task ReloadAllGroupsAsync(CancellationToken cancellationToken = default)
 	{
 		await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
@@ -265,10 +229,35 @@ public class GroupViewModel : ViewModelBase
     {
         await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
         var students = await _unitOfWork.StudentRepository.GetAsync(s => s.GroupId == group.Id);
-        foreach (Student student in students)
+        students.ToList().ForEach(student => student.Group = null);
+        await _unitOfWork.StudentRepository.UpdateRangeAsync(students);
+    }
+
+    private async Task HandleDbExceptions(Func<Task> action, string messageAlreadyExists)
+    {
+        try
         {
-            student.Group = null;
-            await _unitOfWork.StudentRepository.UpdateAsync(student);
+            await action();
+        }
+        catch (DbUpdateConcurrencyException e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
+        }
+        catch (DbUpdateException)
+        {
+            await OpenErrorMessageBoxAsync(messageAlreadyExists);
+        }
+        catch (Exception e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
         }
     }
+
+    private async Task SaveAndReloadAsync(CancellationToken cancellationToken = default)
+    {
+        await _unitOfWork.SaveAsync();
+        await ReloadAllGroupsAsync();
+    }
+
+    private bool IsGroupSelected(object? parameter) => SelectedGroup != null;
 }

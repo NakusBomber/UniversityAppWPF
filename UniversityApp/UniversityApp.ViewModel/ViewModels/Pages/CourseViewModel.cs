@@ -19,18 +19,11 @@ public class CourseViewModel : ViewModelBase
     private readonly IWindowService<CourseDialogViewModel, CourseDialogResult> _courseDialogService;
     private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
 
-    private ObservableCollection<Course>? _courses;
+    private ObservableCollection<Course> _courses = new();
 
     public ObservableCollection<Course> Courses
     {
-        get
-        {
-            if (_courses == null)
-            {
-                _courses = new ObservableCollection<Course>();
-            }
-            return _courses;
-        }
+        get => _courses;
         set
         {
             _courses = value;
@@ -65,7 +58,7 @@ public class CourseViewModel : ViewModelBase
         _messageBoxService = messageBoxService;
 
         OpenCreateCourseDialogCommand = AsyncCommand.Create(OpenCreateCourseDialogAsync);
-        OpenUpdateCourseDialogCommand = AsyncCommand.Create(OpenUpdateCourseDialogAsync, CanOpenUpdateCourseDialog);
+        OpenUpdateCourseDialogCommand = AsyncCommand.Create(OpenUpdateCourseDialogAsync, IsCourseSelected);
         DeleteCourseCommand = AsyncCommand.Create(DeleteCourseAsync, CanDeleteCourse);
         ReloadCoursesCommand = AsyncCommand.Create(ReloadAllCoursesAsync);
     }
@@ -77,21 +70,12 @@ public class CourseViewModel : ViewModelBase
         CourseDialogResult result = _courseDialogService.Show(newVM);
         if (result.IsSuccess && result.Course != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                 await _unitOfWork.CourseRepository.CreateAsync(result.Course);
-                await _unitOfWork.SaveAsync();
-                await ReloadAllCoursesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                await OpenErrorMessageBoxAsync("Already is a course by that name");
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+                await SaveAndReloadAsync();
+            }, "Already is a course by that name");
         }
     }
 
@@ -111,7 +95,7 @@ public class CourseViewModel : ViewModelBase
         CourseDialogResult result = _courseDialogService.Show(newVM);
         if (result.IsSuccess && result.Course != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 var course = await _unitOfWork.CourseRepository.GetByIdAsync(SelectedCourse.Id);
                 course.Name = result.Course.Name;
@@ -121,27 +105,13 @@ public class CourseViewModel : ViewModelBase
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.CourseRepository.UpdateAsync(course);
-                    await _unitOfWork.SaveAsync();
-                    await ReloadAllCoursesAsync();
+                    await SaveAndReloadAsync();
                     SelectedCourse = null;
                 }
-            }
-            catch (DbUpdateConcurrencyException e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
-            catch (DbUpdateException)
-            {
-                await OpenErrorMessageBoxAsync("Already is a course by that name");
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+            }, "Already is a course by that name");
         }
     }
 
-    private bool CanOpenUpdateCourseDialog(object? parameter) => SelectedCourse != null;
     private async Task OpenErrorMessageBoxAsync(string message, CancellationToken cancellationToken = default)
     {
         var messageViewModel = new MessageBoxViewModel(
@@ -167,20 +137,48 @@ public class CourseViewModel : ViewModelBase
 
         var course = await _unitOfWork.CourseRepository.GetByIdAsync(SelectedCourse.Id);
         await _unitOfWork.CourseRepository.DeleteAsync(course);
-        await _unitOfWork.SaveAsync();
+        await SaveAndReloadAsync();
         SelectedCourse = null;
-        await ReloadAllCoursesAsync();
     }
 
-    private bool CanDeleteCourse(object? parameter)
-    {
-        return SelectedCourse != null && SelectedCourse.Groups.Count == 0;
-    }
-
+   
     private async Task ReloadAllCoursesAsync(CancellationToken cancellationToken = default)
     {
         await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
         var list = await _unitOfWork.CourseRepository.GetAsync(asNoTracking: true);
         Courses = new ObservableCollection<Course>(list);
     }
+
+    private async Task SaveAndReloadAsync(CancellationToken cancellationToken = default)
+    {
+        await _unitOfWork.SaveAsync();
+        await ReloadAllCoursesAsync();
+    }
+
+    private async Task HandleDbExceptions(Func<Task> action, string messageAlreadyExists)
+    {
+        try
+        {
+            await action();
+        }
+        catch (DbUpdateConcurrencyException e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
+        }
+        catch (DbUpdateException)
+        {
+            await OpenErrorMessageBoxAsync(messageAlreadyExists);
+        }
+        catch (Exception e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
+        }
+    }
+
+    private bool IsCourseSelected(object? parameter) => SelectedCourse != null;
+    private bool CanDeleteCourse(object? parameter)
+    {
+        return IsCourseSelected(null) && SelectedCourse!.Groups.Count == 0;
+    }
+
 }

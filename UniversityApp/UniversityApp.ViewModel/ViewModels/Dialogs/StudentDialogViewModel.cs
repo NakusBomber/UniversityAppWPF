@@ -54,18 +54,11 @@ public class StudentDialogViewModel : BasicDialogViewModel
         }
     }
 
-    private ObservableCollection<Group>? _groups;
+    private ObservableCollection<Group> _groups = new();
 
     public ObservableCollection<Group> Groups
     {
-        get
-        {
-            if (_groups == null)
-            {
-                _groups = new ObservableCollection<Group>();
-            }
-            return _groups;
-        }
+        get => _groups;
         set
         {
             _groups = value;

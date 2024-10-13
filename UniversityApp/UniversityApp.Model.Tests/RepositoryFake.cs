@@ -90,6 +90,16 @@ public class RepositoryFake<TEntity> : IRepository<TEntity> where TEntity : Enti
         return await Task.Run(() => GetById(id));
     }
 
+    public void UpdateRange(IEnumerable<TEntity> entities)
+    {
+        entities.ToList().ForEach(Update);
+    }
+
+    public async Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+    {
+        await Task.Run(() => UpdateRange(entities));
+    }
+
     public RepositoryFake() : this(new HashSet<TEntity>())
     {
     }

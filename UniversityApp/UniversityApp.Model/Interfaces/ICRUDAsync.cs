@@ -11,6 +11,7 @@ public interface ICRUDAsync<T>
         bool asNoTracking = false);
     public Task<T> GetByIdAsync(Guid id);
     public Task CreateAsync(T entity);
+    public Task UpdateRangeAsync(IEnumerable<T> entities);
     public Task UpdateAsync(T entity);
     public Task DeleteAsync(T entity);
 }

@@ -1,4 +1,5 @@
-﻿using Ninject;
+﻿using Microsoft.EntityFrameworkCore;
+using Ninject;
 using System.Collections.ObjectModel;
 using System.Windows;
 using UniversityApp.Model.Entities;
@@ -16,18 +17,11 @@ public class TeacherViewModel : ViewModelBase
     private readonly IWindowService<TeacherDialogViewModel, TeacherDialogResult> _teacherDialogService;
     private readonly IWindowService<MessageBoxViewModel> _messageBoxService;
 
-    private ObservableCollection<Teacher>? _teachers;
+    private ObservableCollection<Teacher> _teachers = new();
 
     public ObservableCollection<Teacher> Teachers
     {
-        get
-        {
-            if(_teachers == null)
-            {
-                _teachers = new ObservableCollection<Teacher>();
-            }
-            return _teachers;
-        }
+        get => _teachers;
         set
         {
             _teachers = value;
@@ -65,12 +59,7 @@ public class TeacherViewModel : ViewModelBase
         LoadTeachersCommand = AsyncCommand.Create(ReloadAllTeachersAsync);
         DeleteTeacherCommand = AsyncCommand.Create(DeleteTeacherAsync, CanDeleteTeacher);
         OpenCreateTeacherCommand = AsyncCommand.Create(OpenCreateTeacherDialogAsync);
-        OpenUpdateTeacherCommand = AsyncCommand.Create(OpenUpdateTeacherAsync, CanUpdateTeacher);
-    }
-
-    private bool CanUpdateTeacher(object? arg)
-    {
-        return SelectedTeacher != null;
+        OpenUpdateTeacherCommand = AsyncCommand.Create(OpenUpdateTeacherAsync, IsTeacherSelected);
     }
 
     private async Task OpenUpdateTeacherAsync(CancellationToken cancellationToken = default)
@@ -90,7 +79,7 @@ public class TeacherViewModel : ViewModelBase
 
         if(result.IsSuccess && result.Teacher != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 var teacher = await _unitOfWork.TeacherRepository.GetByIdAsync(SelectedTeacher.Id);
                 teacher.FirstName = result.Teacher.FirstName;
@@ -100,16 +89,10 @@ public class TeacherViewModel : ViewModelBase
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.TeacherRepository.UpdateAsync(teacher);
-                    await _unitOfWork.SaveAsync();
-
                     SelectedTeacher = null;
-                    await ReloadAllTeachersAsync();
+                    await SaveAndReloadAsync();
                 }
-            }
-            catch (Exception ex)
-            {
-                await OpenErrorMessageBoxAsync(ex.Message);
-            }
+            });
         }
     }
 
@@ -120,18 +103,12 @@ public class TeacherViewModel : ViewModelBase
 
         if (result.IsSuccess && result.Teacher != null)
         {
-            try
+            await HandleDbExceptions(async () =>
             {
                 await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                 await _unitOfWork.TeacherRepository.CreateAsync(result.Teacher);
-                await _unitOfWork.SaveAsync();
-
-                await ReloadAllTeachersAsync();
-            }
-            catch (Exception e)
-            {
-                await OpenErrorMessageBoxAsync(e.Message);
-            }
+                await SaveAndReloadAsync();
+            });
         }
     }
 
@@ -144,10 +121,8 @@ public class TeacherViewModel : ViewModelBase
 
         var teacher = await _unitOfWork.TeacherRepository.GetByIdAsync(SelectedTeacher.Id);
         await _unitOfWork.TeacherRepository.DeleteAsync(teacher);
-        await _unitOfWork.SaveAsync();
-
         SelectedTeacher = null;
-        await ReloadAllTeachersAsync();
+        await SaveAndReloadAsync();
     }
 
     private bool CanDeleteTeacher(object? arg)
@@ -177,4 +152,22 @@ public class TeacherViewModel : ViewModelBase
     {
         Application.Current.Windows.OfType<Window>().First(w => w.IsActive)?.Close();
     }
+
+    private async Task HandleDbExceptions(Func<Task> action)
+    {
+        try
+        {
+            await action();
+        }
+        catch (Exception e)
+        {
+            await OpenErrorMessageBoxAsync(e.Message);
+        }
+    }
+    private async Task SaveAndReloadAsync(CancellationToken cancellationToken = default)
+    {
+        await _unitOfWork.SaveAsync();
+        await ReloadAllTeachersAsync();
+    }
+    private bool IsTeacherSelected(object? parameter) => SelectedTeacher != null;
 }

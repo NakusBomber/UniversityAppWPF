@@ -101,4 +101,14 @@ public class GeneralRepository<TEntity> : IRepository<TEntity> where TEntity : E
     {
         await Task.Run(() => Delete(entity));
     }
+
+    public void UpdateRange(IEnumerable<TEntity> entities)
+    {
+        _entities.UpdateRange(entities);
+    }
+
+    public async Task UpdateRangeAsync(IEnumerable<TEntity> entities)
+    {
+        await Task.Run(() => UpdateRange(entities));
+    }
 }

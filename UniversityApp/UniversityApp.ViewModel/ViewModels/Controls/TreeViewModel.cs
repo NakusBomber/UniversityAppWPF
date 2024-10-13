@@ -20,17 +20,10 @@ public class TreeViewModel : ViewModelBase
         };
     }
 
-    private ObservableCollection<TreeItem>? _items;
+    private ObservableCollection<TreeItem> _items = new();
     public ObservableCollection<TreeItem> Items
     {
-        get
-        {
-            if (_items == null)
-            {
-                _items = new ObservableCollection<TreeItem>();
-            }
-            return _items;
-        }
+        get => _items;
         set
         {
             _items = value;

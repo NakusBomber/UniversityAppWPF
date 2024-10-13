@@ -54,18 +54,11 @@ public class GroupDialogViewModel : BasicDialogViewModel
 		}
 	}
 
-	private ObservableCollection<Course>? _courses;
+	private ObservableCollection<Course> _courses = new();
 
 	public ObservableCollection<Course> Courses
 	{
-		get
-		{
-			if(_courses == null)
-			{
-				_courses = new ObservableCollection<Course>();
-			}
-			return _courses;
-		}
+		get => _courses;
 		set
 		{
 			_courses = value;
@@ -73,18 +66,11 @@ public class GroupDialogViewModel : BasicDialogViewModel
 		}
 	}
 
-    private ObservableCollection<Teacher>? _teachers;
+    private ObservableCollection<Teacher> _teachers = new();
 
     public ObservableCollection<Teacher> Teachers
     {
-        get
-        {
-            if (_teachers == null)
-            {
-                _teachers = new ObservableCollection<Teacher>();
-            }
-            return _teachers;
-        }
+		get => _teachers;
         set
         {
             _teachers = value;
