@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace UniversityApp.View.Dialogs
 {
     /// <summary>
-    /// Логика взаимодействия для MyMessageBox.xaml
+    /// Логика взаимодействия для MessageBox.xaml
     /// </summary>
-    public partial class MyMessageBox : Window
+    public partial class MessageBox : Window
     {
-        public MyMessageBox()
+        public MessageBox()
         {
             InitializeComponent();
         }

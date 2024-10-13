@@ -9,7 +9,7 @@ public class MessageBoxService : IWindowService<MessageBoxViewModel>
 {
     public void Show(MessageBoxViewModel viewModel)
     {
-        var window = new MyMessageBox();
+        var window = new Dialogs.MessageBox();
         window.DataContext = viewModel;
 
         window.ShowDialog();
