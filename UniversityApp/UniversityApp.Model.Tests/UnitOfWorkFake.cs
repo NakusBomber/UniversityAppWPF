@@ -37,10 +37,6 @@ public class UnitOfWorkFake : IUnitOfWork
               new RepositoryFake<Teacher>())
     {
     }
-    public void Dispose()
-    {
-        GC.SuppressFinalize(this);
-    }
 
     public void Save()
     {

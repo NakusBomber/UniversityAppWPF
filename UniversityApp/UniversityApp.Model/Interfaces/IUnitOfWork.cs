@@ -2,7 +2,7 @@
 
 namespace UniversityApp.Model.Interfaces;
 
-public interface IUnitOfWork : IDisposable
+public interface IUnitOfWork
 {
     public IRepository<Course> CourseRepository { get; }
     public IRepository<Group> GroupRepository { get; }
