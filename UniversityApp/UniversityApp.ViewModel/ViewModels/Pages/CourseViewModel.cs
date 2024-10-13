@@ -117,7 +117,7 @@ public class CourseViewModel : ViewModelBase
                 course.Name = result.Course.Name;
                 course.Description = result.Course.Description;
 
-                if (!course.FullCompare(SelectedCourse))
+                if (!Entity.AreEntitiesEqual(course, SelectedCourse))
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.CourseRepository.UpdateAsync(course);

@@ -185,7 +185,7 @@ public class GroupViewModel : ViewModelBase
                 group.Course = await _unitOfWork.CourseRepository.GetByIdAsync(result.Group.Course!.Id);
                 group.Teacher = await _unitOfWork.TeacherRepository.GetByIdAsync(result.Group.Teacher!.Id);
 
-                if (!group.FullCompare(SelectedGroup))
+                if (!Entity.AreEntitiesEqual(group, SelectedGroup))
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.GroupRepository.UpdateAsync(group);

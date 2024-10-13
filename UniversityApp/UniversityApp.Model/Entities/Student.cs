@@ -55,14 +55,6 @@ public class Student : Entity
         return (Id, FirstName, LastName, GroupId).GetHashCode();
     }
 
-    public bool FullCompare(Student other)
-    {
-        return this.Id == other.Id &&
-            this.FirstName == other.FirstName &&
-            this.LastName == other.LastName &&
-            this.Group == other.Group;
-    }
-
     private string GetFullName()
     {
         string spacer = FirstName != null && LastName != null 

@@ -138,7 +138,7 @@ public class StudentViewModel : ViewModelBase
                     student.Group = null;
                 }
 
-                if (!student.FullCompare(SelectedStudent))
+                if (!Entity.AreEntitiesEqual(student, SelectedStudent))
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.StudentRepository.UpdateAsync(student);

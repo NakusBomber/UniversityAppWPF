@@ -46,13 +46,6 @@ public class Teacher : Entity
     {
         return (Id, FirstName, LastName).GetHashCode();
     }
-
-    public bool FullCompare(Teacher other)
-    {
-        return this.Id == other.Id &&
-            this.FirstName == other.FirstName &&
-            this.LastName == other.LastName;
-    }
     private string GetFullName()
     {
         string spacer = FirstName != null && LastName != null

@@ -96,7 +96,7 @@ public class TeacherViewModel : ViewModelBase
                 teacher.FirstName = result.Teacher.FirstName;
                 teacher.LastName = result.Teacher.LastName;
 
-                if (!teacher.FullCompare(SelectedTeacher))
+                if (!Entity.AreEntitiesEqual(teacher, SelectedTeacher))
                 {
                     await Task.Delay(TimeSpan.FromMilliseconds(1)).ConfigureAwait(false);
                     await _unitOfWork.TeacherRepository.UpdateAsync(teacher);

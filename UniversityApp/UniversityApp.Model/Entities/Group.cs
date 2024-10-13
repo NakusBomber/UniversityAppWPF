@@ -59,11 +59,4 @@ public class Group : Entity
         return (Id, Name, CourseId, TeacherId).GetHashCode();
     }
 
-    public bool FullCompare(Group other)
-    {
-        return this.Id == other.Id &&
-            this.Name == other.Name &&
-            this.Course == other.Course &&
-            this.Teacher == other.Teacher;
-    }
 }

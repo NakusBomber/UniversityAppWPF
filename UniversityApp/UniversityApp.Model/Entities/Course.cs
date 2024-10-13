@@ -43,8 +43,4 @@ public class Course : Entity
         return (Id, Name, Description).GetHashCode();
     }
 
-    public bool FullCompare(Course other)
-    {
-        return Id == other.Id && Name == other.Name && Description == other.Description;
-    }
 }
