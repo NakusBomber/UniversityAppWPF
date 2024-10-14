@@ -1,0 +1,44 @@
+﻿<Window x:Class="UniversityApp.View.Dialogs.TeacherDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UniversityApp.View.Dialogs"
+        xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Dialogs;assembly=UniversityApp.ViewModel"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        d:DataContext="{d:DesignInstance Type=vms:TeacherDialogViewModel}"
+        Title="{Binding TitleWindow}"
+        Height="168"
+        Width="300">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding OkCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Button Content="Ok"
+                Width="50"
+                Command="{Binding OkCommand}"
+                HorizontalAlignment="Left" Margin="160,104,0,0" VerticalAlignment="Top"/>
+        <Button Content="Cancel"
+                Width="50"
+                Command="{Binding CancelCommand}"
+                HorizontalAlignment="Left" Margin="232,104,0,0" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="20,28,0,0" TextWrapping="Wrap"
+                   Text="First name" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="20,68,0,0" TextWrapping="Wrap"
+                   Text="Last name"
+                   VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left" Margin="100,26,0,0" TextWrapping="Wrap"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalAlignment="Top" Width="159"/>
+        <TextBox HorizontalAlignment="Left" Margin="100,66,0,0" TextWrapping="Wrap"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}"
+                 VerticalAlignment="Top" Width="159"/>
+
+    </Grid>
+</Window>

@@ -1,0 +1,46 @@
+﻿<Window x:Class="UniversityApp.View.Dialogs.CourseDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Dialogs;assembly=UniversityApp.ViewModel"
+        xmlns:local="clr-namespace:UniversityApp.View.Dialogs"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        d:DataContext="{d:DesignInstance Type=vms:CourseDialogViewModel}"
+        Title="{Binding TitleWindow}"
+        Height="250" Width="286">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding OkCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}" />
+    </Window.InputBindings>
+
+    <Grid>
+        <Label Content="Name" HorizontalAlignment="Left" Margin="18,16,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Margin="104,22,0,0"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                 Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                 Width="140">
+        </TextBox>
+        <Label Content="Description" HorizontalAlignment="Left" Margin="20,54,0,0" VerticalAlignment="Top"/>
+        <TextBox HorizontalAlignment="Left"
+                 Margin="102,58,0,0"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                 Width="142"
+                 Height="82"
+                 Style="{StaticResource ErrorElementStyle}"
+                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"/>
+        <Button Content="Ok"
+                Command="{Binding OkCommand}"
+                HorizontalAlignment="Left" Margin="146,178,0,0" VerticalAlignment="Top" Width="52"/>
+        <Button Content="Cancel"
+                Command="{Binding CancelCommand}"
+                HorizontalAlignment="Left" Margin="208,178,0,0" VerticalAlignment="Top" Width="52"/>
+
+    </Grid>
+</Window>

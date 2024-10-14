@@ -1,0 +1,34 @@
+﻿<Window x:Class="UniversityApp.View.Dialogs.MessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vms="clr-namespace:UniversityApp.ViewModel.ViewModels.Dialogs;assembly=UniversityApp.ViewModel"
+        xmlns:local="clr-namespace:UniversityApp.View.Dialogs"
+        mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance Type=vms:MessageBoxViewModel}"
+        Title="{Binding TitleWindow}"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="Height"
+        Width="400">
+    <Window.InputBindings>
+        <KeyBinding Key="Enter" Command="{Binding CloseCommand}" />
+        <KeyBinding Key="Escape" Command="{Binding CloseCommand}" />
+    </Window.InputBindings>
+
+    <Grid Height="Auto">
+        <StackPanel Orientation="Vertical"
+                    Height="Auto"
+                    VerticalAlignment="Center">
+            <TextBlock Text="{Binding Message, FallbackValue=INFO_MESSAGE}"
+                       TextWrapping="Wrap"
+                       Height="Auto"
+                       Padding="20"/>
+            <Button Content="OK"
+                    Margin="0,15"
+                    Width="50"
+                    Command="{Binding CloseCommand}"/>
+        </StackPanel>
+    </Grid>
+</Window>
